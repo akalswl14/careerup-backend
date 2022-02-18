@@ -1,6 +1,6 @@
-# CareerUp
+# JobUp
 
-The Backend of CareerUp
+The Backend of JobUp
 
 ## Installation
 

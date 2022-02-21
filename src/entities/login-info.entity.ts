@@ -13,11 +13,11 @@ export class LoginInfo {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   loginId: number;
 
-  @Column()
-  loginSuccess: boolean;
-
   @ManyToOne(() => User, (user) => user.loginInfoList)
   user: User;
+
+  @Column()
+  loginSuccess: boolean;
 
   @CreateDateColumn({})
   createdAt: Date;

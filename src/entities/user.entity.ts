@@ -12,6 +12,8 @@ import { LoginInfo } from './login-info.entity';
 import { School } from './school.entity';
 import { PortfolioLog } from './portfolio-log.entity';
 import { ReportLog } from './report-log.entity';
+import { Repository } from './repository.entity';
+import { Portfolio } from './porfolio.entity';
 
 @Entity()
 export class User {
@@ -53,6 +55,12 @@ export class User {
 
   @OneToMany(() => ReportLog, (reportLog) => reportLog.user)
   reportLogList: ReportLog[];
+
+  @OneToMany(() => Repository, (repository) => repository.user)
+  repositoryList: Repository[];
+
+  @OneToMany(() => Portfolio, (portfolio) => portfolio.user)
+  portfolioList: Portfolio[];
 
   @CreateDateColumn()
   createdAt: Date;

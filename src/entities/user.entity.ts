@@ -14,6 +14,8 @@ import { PortfolioLog } from './portfolio-log.entity';
 import { ReportLog } from './report-log.entity';
 import { Repository } from './repository.entity';
 import { Portfolio } from './porfolio.entity';
+import { MonthlyReport } from './monthly-report.entity';
+import { WishRecruit } from './wish-recruit.entity';
 
 @Entity()
 export class User {
@@ -61,6 +63,12 @@ export class User {
 
   @OneToMany(() => Portfolio, (portfolio) => portfolio.user)
   portfolioList: Portfolio[];
+
+  @OneToMany(() => MonthlyReport, (monthlyReport) => monthlyReport.user)
+  monthlyReportList: MonthlyReport[];
+
+  @OneToMany(() => WishRecruit, (wishRecruit) => wishRecruit.user)
+  wishRecruitList: WishRecruit[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -16,13 +16,13 @@ export class User {
   @Column({ type: 'bigint' })
   gitUserId: number;
 
-  @Column({ type: 'varchar', length: '15' })
+  @Column({ length: '15' })
   username: string;
 
-  @Column({ type: 'varchar', length: '255' })
+  @Column({ length: '255' })
   email: string;
 
-  @Column({ type: 'varchar', length: '255' })
+  @Column({ length: '255' })
   profileUrl: string;
 
   @Column({ type: 'boolean', default: false })

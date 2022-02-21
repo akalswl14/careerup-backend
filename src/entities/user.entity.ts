@@ -4,7 +4,9 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { LoginInfo } from './login-info.entity';
 
 @Entity()
 export class User {
@@ -28,6 +30,9 @@ export class User {
 
   @Column({ type: 'boolean', default: false })
   settingCoupon: boolean;
+
+  @OneToMany(() => LoginInfo, (loginInfo) => loginInfo.user)
+  loginInfoList: LoginInfo[];
 
   @CreateDateColumn({})
   createdAt: Date;

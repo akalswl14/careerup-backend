@@ -42,9 +42,9 @@ export class User {
   @OneToMany(() => School, (school) => school.user)
   schoolList: School[];
 
-  @CreateDateColumn({})
+  @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({})
+  @UpdateDateColumn()
   updatedAt: Date;
 }

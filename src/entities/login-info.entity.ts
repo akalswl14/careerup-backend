@@ -18,6 +18,6 @@ export class LoginInfo {
   @Column()
   loginSuccess: boolean;
 
-  @CreateDateColumn({})
+  @CreateDateColumn()
   createdAt: Date;
 }

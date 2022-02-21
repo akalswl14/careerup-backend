@@ -7,6 +7,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { OauthInfo } from './\boauth-info.entity';
+import { Career } from './career.entity';
 import { LoginInfo } from './login-info.entity';
 import { School } from './school.entity';
 
@@ -41,6 +42,9 @@ export class User {
 
   @OneToMany(() => School, (school) => school.user)
   schoolList: School[];
+
+  @OneToMany(() => Career, (career) => career.user)
+  careerList: Career[];
 
   @CreateDateColumn()
   createdAt: Date;

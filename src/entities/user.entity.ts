@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { OauthInfo } from './\boauth-info.entity';
 import { LoginInfo } from './login-info.entity';
 
 @Entity()
@@ -33,6 +34,9 @@ export class User {
 
   @OneToMany(() => LoginInfo, (loginInfo) => loginInfo.user)
   loginInfoList: LoginInfo[];
+
+  @OneToMany(() => OauthInfo, (oauthInfo) => oauthInfo.user)
+  oauthInfoList: OauthInfo[];
 
   @CreateDateColumn({})
   createdAt: Date;

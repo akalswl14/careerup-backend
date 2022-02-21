@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { OauthInfo } from './\boauth-info.entity';
+import { OauthInfo } from './oauth-info.entity';
 import { Career } from './career.entity';
 import { LoginInfo } from './login-info.entity';
 import { School } from './school.entity';

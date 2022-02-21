@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { OauthInfo } from './\boauth-info.entity';
 import { LoginInfo } from './login-info.entity';
+import { School } from './school.entity';
 
 @Entity()
 export class User {
@@ -37,6 +38,9 @@ export class User {
 
   @OneToMany(() => OauthInfo, (oauthInfo) => oauthInfo.user)
   oauthInfoList: OauthInfo[];
+
+  @OneToMany(() => School, (school) => school.user)
+  schoolList: School[];
 
   @CreateDateColumn({})
   createdAt: Date;

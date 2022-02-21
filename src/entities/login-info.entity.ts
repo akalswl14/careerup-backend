@@ -11,10 +11,10 @@ import { User } from './user.entity';
 @Entity()
 export class LoginInfo {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  oauthId: number;
+  loginId: number;
 
-  @Column({ length: '255' })
-  accessToken: string;
+  @Column()
+  loginSuccess: boolean;
 
   @ManyToOne(() => User, (user) => user.loginInfoList)
   user: User;

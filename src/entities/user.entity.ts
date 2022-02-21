@@ -18,7 +18,7 @@ import { Portfolio } from './porfolio.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  userId: number;
+  id: number;
 
   @Column({ type: 'bigint' })
   gitUserId: number;

@@ -11,9 +11,9 @@ import { User } from './user.entity';
 @Entity()
 export class ReportLog {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  reportLogId: number;
+  id: number;
 
-  @ManyToOne(() => User, (user) => user.reportLogList)
+  @ManyToOne(() => User, (user) => user.reportLogList, { nullable: false })
   user: User;
 
   @Column({ type: 'enum', enum: ProcessStatus })

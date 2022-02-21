@@ -11,9 +11,9 @@ import { User } from './user.entity';
 @Entity()
 export class School {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  schoolId: number;
+  id: number;
 
-  @ManyToOne(() => User, (user) => user.schoolList)
+  @ManyToOne(() => User, (user) => user.schoolList, { nullable: false })
   user: User;
 
   @Column({ length: 255 })
@@ -22,7 +22,7 @@ export class School {
   @Column()
   schoolStartDate: Date;
 
-  @Column()
+  @Column({ nullable: true })
   schoolEndDate: Date;
 
   @CreateDateColumn()

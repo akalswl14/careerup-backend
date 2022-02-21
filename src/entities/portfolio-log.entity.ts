@@ -11,9 +11,9 @@ import { User } from './user.entity';
 @Entity()
 export class PortfolioLog {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  portfolioLogId: number;
+  id: number;
 
-  @ManyToOne(() => User, (user) => user.portfolioLogList)
+  @ManyToOne(() => User, (user) => user.portfolioLogList, { nullable: false })
   user: User;
 
   @Column({ type: 'enum', enum: ProcessStatus })

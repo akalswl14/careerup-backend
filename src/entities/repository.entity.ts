@@ -11,9 +11,9 @@ import { User } from './user.entity';
 @Entity()
 export class Repository {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  repositoryId: number;
+  id: number;
 
-  @ManyToOne(() => User, (user) => user.repositoryList)
+  @ManyToOne(() => User, (user) => user.repositoryList, { nullable: false })
   user: User;
 
   @Column({ type: 'bigint' })

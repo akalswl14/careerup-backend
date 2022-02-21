@@ -11,9 +11,9 @@ import { User } from './user.entity';
 @Entity()
 export class Career {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  careerId: number;
+  id: number;
 
-  @ManyToOne(() => User, (user) => user.careerList)
+  @ManyToOne(() => User, (user) => user.careerList, { nullable: false })
   user: User;
 
   @Column({ length: 255 })
@@ -22,7 +22,7 @@ export class Career {
   @Column()
   careerStartDate: Date;
 
-  @Column()
+  @Column({ nullable: true })
   careerEndDate: Date;
 
   @CreateDateColumn()

@@ -10,9 +10,9 @@ import { User } from './user.entity';
 @Entity()
 export class LoginInfo {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  loginId: number;
+  id: number;
 
-  @ManyToOne(() => User, (user) => user.loginInfoList)
+  @ManyToOne(() => User, (user) => user.loginInfoList, { nullable: false })
   user: User;
 
   @Column()

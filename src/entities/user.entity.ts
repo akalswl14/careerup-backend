@@ -10,6 +10,8 @@ import { OauthInfo } from './oauth-info.entity';
 import { Career } from './career.entity';
 import { LoginInfo } from './login-info.entity';
 import { School } from './school.entity';
+import { PortfolioLog } from './portfolio-log.entity';
+import { ReportLog } from './report-log.entity';
 
 @Entity()
 export class User {
@@ -45,6 +47,12 @@ export class User {
 
   @OneToMany(() => Career, (career) => career.user)
   careerList: Career[];
+
+  @OneToMany(() => PortfolioLog, (portfolioLog) => portfolioLog.user)
+  portfolioLogList: PortfolioLog[];
+
+  @OneToMany(() => ReportLog, (reportLog) => reportLog.user)
+  reportLogList: ReportLog[];
 
   @CreateDateColumn()
   createdAt: Date;

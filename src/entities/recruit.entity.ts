@@ -8,6 +8,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Task } from './task.entity';
 import { Techstack } from './techstack.entity';
 import { WishRecruit } from './wish-recruit.entity';
 
@@ -22,6 +23,10 @@ export class Recruit {
   @ManyToMany(() => Techstack)
   @JoinTable()
   techstacks: Techstack[];
+
+  @ManyToMany(() => Task)
+  @JoinTable()
+  tasks: Task[];
 
   @Column({ length: '255' })
   companyName: string;

@@ -16,6 +16,7 @@ import { Repository } from './repository.entity';
 import { Portfolio } from './porfolio.entity';
 import { MonthlyReport } from './monthly-report.entity';
 import { WishRecruit } from './wish-recruit.entity';
+import { WishTask } from './wish-task.entity';
 
 @Entity()
 export class User {
@@ -69,6 +70,9 @@ export class User {
 
   @OneToMany(() => WishRecruit, (wishRecruit) => wishRecruit.user)
   wishRecruits: WishRecruit[];
+
+  @OneToMany(() => WishTask, (wishTask) => wishTask.user)
+  wishTasks: WishTask[];
 
   @CreateDateColumn()
   createdAt: Date;

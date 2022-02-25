@@ -12,7 +12,7 @@ export class LoginInfo {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.loginInfoList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.loginInfos, { nullable: false })
   user: User;
 
   @Column()

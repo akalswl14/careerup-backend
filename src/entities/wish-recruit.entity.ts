@@ -12,10 +12,10 @@ export class WishRecruit {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.wishRecruitList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.wishRecruits, { nullable: false })
   user: User;
 
-  @ManyToOne(() => Recruit, (recruit) => recruit.wishRecruitList, {
+  @ManyToOne(() => Recruit, (recruit) => recruit.wishRecruits, {
     nullable: false,
   })
   recruit: Recruit;

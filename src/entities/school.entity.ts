@@ -13,7 +13,7 @@ export class School {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.schoolList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.schools, { nullable: false })
   user: User;
 
   @Column({ length: 255 })

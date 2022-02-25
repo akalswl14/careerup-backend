@@ -13,7 +13,7 @@ export class PortfolioLog {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.portfolioLogList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.portfolioLogs, { nullable: false })
   user: User;
 
   @Column({ type: 'enum', enum: ProcessStatus })

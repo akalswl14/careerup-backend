@@ -2,10 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Techstack } from './techstack.entity';
 import { WishRecruit } from './wish-recruit.entity';
 
 @Entity()
@@ -14,7 +17,11 @@ export class Recruit {
   id: number;
 
   @OneToMany(() => WishRecruit, (wishRecruit) => wishRecruit.recruit)
-  wishRecruitList: WishRecruit[];
+  wishRecruits: WishRecruit[];
+
+  @ManyToMany(() => Techstack)
+  @JoinTable()
+  techstacks: Techstack[];
 
   @Column({ length: '255' })
   companyName: string;

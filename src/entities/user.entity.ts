@@ -41,34 +41,34 @@ export class User {
   settingCoupon: boolean;
 
   @OneToMany(() => LoginInfo, (loginInfo) => loginInfo.user)
-  loginInfoList: LoginInfo[];
+  loginInfos: LoginInfo[];
 
   @OneToMany(() => OauthInfo, (oauthInfo) => oauthInfo.user)
-  oauthInfoList: OauthInfo[];
+  oauthInfos: OauthInfo[];
 
   @OneToMany(() => School, (school) => school.user)
-  schoolList: School[];
+  schools: School[];
 
   @OneToMany(() => Career, (career) => career.user)
-  careerList: Career[];
+  careers: Career[];
 
   @OneToMany(() => PortfolioLog, (portfolioLog) => portfolioLog.user)
-  portfolioLogList: PortfolioLog[];
+  portfolioLogs: PortfolioLog[];
 
   @OneToMany(() => ReportLog, (reportLog) => reportLog.user)
-  reportLogList: ReportLog[];
+  reportLogs: ReportLog[];
 
   @OneToMany(() => Repository, (repository) => repository.user)
-  repositoryList: Repository[];
+  repositories: Repository[];
 
   @OneToMany(() => Portfolio, (portfolio) => portfolio.user)
-  portfolioList: Portfolio[];
+  portfolios: Portfolio[];
 
   @OneToMany(() => MonthlyReport, (monthlyReport) => monthlyReport.user)
-  monthlyReportList: MonthlyReport[];
+  monthlyReports: MonthlyReport[];
 
   @OneToMany(() => WishRecruit, (wishRecruit) => wishRecruit.user)
-  wishRecruitList: WishRecruit[];
+  wishRecruits: WishRecruit[];
 
   @CreateDateColumn()
   createdAt: Date;

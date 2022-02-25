@@ -12,7 +12,7 @@ export class OauthInfo {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.oauthInfoList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.oauthInfos, { nullable: false })
   user: User;
 
   @Column({ length: '255' })

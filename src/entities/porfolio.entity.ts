@@ -13,7 +13,7 @@ export class Portfolio {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.portfolioList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.portfolios, { nullable: false })
   user: User;
 
   @Column({ length: '255' })

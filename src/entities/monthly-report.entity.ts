@@ -13,11 +13,11 @@ export class MonthlyReport {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.monthlyReportList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.monthlyReports, { nullable: false })
   user: User;
 
   @Column({ type: 'bigint' })
-  repoIdList: number[];
+  repoIds: number[];
 
   @Column({ nullable: true, default: 0 })
   commitNum: number;

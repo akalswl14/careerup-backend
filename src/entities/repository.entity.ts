@@ -13,7 +13,7 @@ export class Repository {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => User, (user) => user.repositoryList, { nullable: false })
+  @ManyToOne(() => User, (user) => user.repositories, { nullable: false })
   user: User;
 
   @Column({ type: 'bigint' })

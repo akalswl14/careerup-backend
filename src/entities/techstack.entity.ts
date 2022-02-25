@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-export class TechStack {
+export class Techstack {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 

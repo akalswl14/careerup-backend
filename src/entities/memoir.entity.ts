@@ -3,9 +3,9 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  ManyToOne,
   UpdateDateColumn,
   JoinColumn,
+  OneToOne,
 } from 'typeorm';
 import { MonthlyReport } from './monthly-report.entity';
 
@@ -14,7 +14,7 @@ export class Memoir {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: number;
 
-  @ManyToOne(() => MonthlyReport)
+  @OneToOne(() => MonthlyReport, { nullable: true })
   @JoinColumn()
   monthlyReport: MonthlyReport;
 

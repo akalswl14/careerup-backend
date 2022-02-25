@@ -11,7 +11,7 @@ import { WishTask } from './wish-task.entity';
 @Entity()
 export class Task {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  taskId: number;
+  id: number;
 
   @OneToMany(() => WishTask, (wishTask) => wishTask.task)
   wishTasks: WishTask[];

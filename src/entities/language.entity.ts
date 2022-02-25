@@ -9,7 +9,7 @@ import {
 @Entity()
 export class Language {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  languageId: number;
+  id: number;
 
   @Column({ length: '255' })
   languageName: string;

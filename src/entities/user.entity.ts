@@ -26,7 +26,7 @@ export class User {
   @Column({ type: 'bigint' })
   gitUserId: bigint;
 
-  @Column({ length: '15' })
+  @Column({ length: '40' })
   username: string;
 
   @Column({ length: '255' })

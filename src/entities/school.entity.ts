@@ -16,7 +16,7 @@ export class School {
   @ManyToOne(() => User, (user) => user.schools, { nullable: false })
   user: User;
 
-  @Column({ length: 255 })
+  @Column({ length: '255' })
   title: string;
 
   @Column()

@@ -10,7 +10,7 @@ import { User } from './user.entity';
 @Entity()
 export class OauthInfo {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: bigint;
 
   @ManyToOne(() => User, (user) => user.oauthInfos, { nullable: false })
   user: User;

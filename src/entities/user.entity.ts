@@ -21,10 +21,10 @@ import { WishTask } from './wish-task.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: bigint;
 
   @Column({ type: 'bigint' })
-  gitUserId: number;
+  gitUserId: bigint;
 
   @Column({ length: '15' })
   username: string;

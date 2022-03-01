@@ -10,7 +10,7 @@ import { User } from './user.entity';
 @Entity()
 export class WishRecruit {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: bigint;
 
   @ManyToOne(() => User, (user) => user.wishRecruits, { nullable: false })
   user: User;

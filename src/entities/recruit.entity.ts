@@ -15,7 +15,7 @@ import { WishRecruit } from './wish-recruit.entity';
 @Entity()
 export class Recruit {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: number;
+  id: bigint;
 
   @OneToMany(() => WishRecruit, (wishRecruit) => wishRecruit.recruit)
   wishRecruits: WishRecruit[];
@@ -53,7 +53,7 @@ export class Recruit {
   dueType: number;
 
   @Column({ type: 'bigint' })
-  recruitCode: number;
+  recruitCode: bigint;
 
   @CreateDateColumn()
   createdAt: Date;

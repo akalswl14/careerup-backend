@@ -9,13 +9,13 @@ import {
 @Entity()
 export class Language {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: bigint;
+  id: string;
 
   @Column({ length: '255' })
   languageName: string;
 
   @Column({ type: 'bigint' })
-  languageCode: bigint;
+  languageCode: string;
 
   @CreateDateColumn()
   createdAt: Date;

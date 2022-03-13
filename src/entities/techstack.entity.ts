@@ -12,7 +12,7 @@ import { Language } from './language.entity';
 @Entity()
 export class Techstack {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: bigint;
+  id: string;
 
   @ManyToMany(() => Language)
   @JoinTable()
@@ -22,7 +22,7 @@ export class Techstack {
   stackName: string;
 
   @Column({ type: 'bigint' })
-  stackCode: bigint;
+  stackCode: string;
 
   @CreateDateColumn()
   createdAt: Date;

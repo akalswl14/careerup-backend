@@ -12,7 +12,7 @@ import { MonthlyReport } from './monthly-report.entity';
 @Entity()
 export class Memoir {
   @PrimaryGeneratedColumn({ type: 'bigint' })
-  id: bigint;
+  id: string;
 
   @OneToOne(() => MonthlyReport, { nullable: true })
   @JoinColumn()

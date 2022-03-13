@@ -29,7 +29,7 @@ export class User {
   @Column({ length: '40' })
   username: string;
 
-  @Column({ length: '255' })
+  @Column({ length: '255', nullable: true })
   email: string;
 
   @Column({ length: '255' })

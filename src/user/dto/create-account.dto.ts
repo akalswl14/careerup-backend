@@ -9,9 +9,8 @@ export class CreateAccountInput extends OmitType(User, [
 ]) {}
 
 export class CreateAccountOutput {
-  newUser: boolean;
-  userId: bigint;
-  gitUserId: bigint;
+  userId: string;
+  gitUserId: string;
   profileUrl: string;
   username: string;
 }

@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
@@ -34,7 +29,6 @@ export class UserService {
         username,
       } = await this.users.save(this.users.create(createAccountInput));
       return {
-        newUser: true,
         userId,
         gitUserId,
         profileUrl,

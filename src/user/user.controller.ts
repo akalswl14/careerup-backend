@@ -1,11 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpException,
-  HttpStatus,
-  Post,
-} from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -22,4 +15,8 @@ export class UserController {
   ): Promise<CreateAccountOutput> {
     return this.userService.createAccount(userData);
   }
+
+  // @Post('login')
+  // async login();
+  // git id 만 던져주면 안되잖아?!
 }

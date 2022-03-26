@@ -26,8 +26,8 @@ export class User {
   @Column({ type: 'bigint' })
   gitUserId: string;
 
-  @Column({ type: 'varchar' })
-  gitAccessToken: string;
+  @Column({ type: 'varchar', nullable: true })
+  userAccessToken: string;
 
   @Column({ length: '40' })
   username: string;

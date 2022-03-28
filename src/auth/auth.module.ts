@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { LoginInfo } from 'src/entities/login-info.entity';
+import { OauthInfo } from 'src/entities/oauth-info.entity';
 import { User } from 'src/entities/user.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -11,7 +13,7 @@ import { jwtConstants } from './constants';
 @Module({
   imports: [
     PassportModule,
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, OauthInfo, LoginInfo]),
     JwtModule.register({
       secret: jwtConstants.secret,
       signOptions: { expiresIn: '2d' },

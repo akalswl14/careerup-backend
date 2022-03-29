@@ -19,7 +19,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async githubLogin(req) {
+  async githubLogin(req): Promise<{ accessToken: string }> {
     if (!req.user) throw new ConflictException('유효하지 않은 유저');
 
     const gitUserId = req.user.gitUserId.toString();
@@ -46,14 +46,17 @@ export class AuthService {
       });
     }
 
-    await this.oauthInfosRepository.create({
+    await this.oauthInfosRepository.save({
       user: { id: userId },
       accessToken: gitAccessToken,
       provider: GITHUB,
     });
     const userAccessToken = this.jwtService.sign({ sub: userId });
     await this.usersRepository.update({ id: userId }, { userAccessToken });
-    await this.loginInfosRepository.create({ loginSuccess: true });
+    await this.loginInfosRepository.save({
+      user: { id: userId },
+      loginSuccess: true,
+    });
 
     return {
       accessToken: userAccessToken,

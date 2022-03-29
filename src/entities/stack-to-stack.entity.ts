@@ -21,6 +21,6 @@ export class StackToStack {
   @Column()
   innerStack: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

@@ -77,9 +77,9 @@ export class User {
   @OneToMany(() => WishTask, (wishTask) => wishTask.user)
   wishTasks: WishTask[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp without time zone' })
   updatedAt: Date;
 }

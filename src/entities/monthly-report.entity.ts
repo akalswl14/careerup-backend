@@ -46,9 +46,9 @@ export class MonthlyReport {
   @Column({ length: '255', nullable: true })
   stackTask: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp without time zone' })
   updatedAt: Date;
 }

@@ -20,6 +20,6 @@ export class WishRecruit {
   })
   recruit: Recruit;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

@@ -19,6 +19,6 @@ export class ReportLog {
   @Column({ type: 'enum', enum: ProcessStatus })
   reportStatus: ProcessStatus;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

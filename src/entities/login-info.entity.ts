@@ -18,6 +18,6 @@ export class LoginInfo {
   @Column()
   loginSuccess: boolean;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

@@ -22,9 +22,9 @@ export class Repository {
   @Column({ length: '255' })
   repoName: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp without time zone' })
   updatedAt: Date;
 }

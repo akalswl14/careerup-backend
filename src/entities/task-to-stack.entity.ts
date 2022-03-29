@@ -21,6 +21,6 @@ export class TaskToStack {
   @Column()
   num: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

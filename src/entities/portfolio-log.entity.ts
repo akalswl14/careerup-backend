@@ -19,6 +19,6 @@ export class PortfolioLog {
   @Column({ type: 'enum', enum: ProcessStatus })
   portfolioStatus: ProcessStatus;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

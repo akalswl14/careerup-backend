@@ -22,6 +22,6 @@ export class WishTask {
   @Column()
   priority: number;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

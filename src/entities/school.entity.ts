@@ -25,9 +25,9 @@ export class School {
   @Column({ nullable: true })
   schoolEndDate: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp without time zone' })
   updatedAt: Date;
 }

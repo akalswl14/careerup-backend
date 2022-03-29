@@ -21,6 +21,6 @@ export class OauthInfo {
   @Column({ length: '255' })
   provider: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 }

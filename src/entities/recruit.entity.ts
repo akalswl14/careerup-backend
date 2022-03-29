@@ -49,7 +49,7 @@ export class Recruit {
   @Column({ nullable: true })
   dueDate: Date;
 
-  @Column({ type: 'bit', length: '2' })
+  @Column({ type: 'int' })
   dueType: number;
 
   @Column({ type: 'bigint' })

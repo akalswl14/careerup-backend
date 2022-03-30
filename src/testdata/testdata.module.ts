@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { Language } from 'src/entities/language.entity';
 import { Recruit } from 'src/entities/recruit.entity';
 import { Task } from 'src/entities/task.entity';
 import { Techstack } from 'src/entities/techstack.entity';
@@ -8,7 +9,9 @@ import { TestdataController } from './testdata.controller';
 import { TestdataService } from './testdata.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Recruit, Task, Techstack])],
+  imports: [
+    TypeOrmModule.forFeature([User, Recruit, Task, Techstack, Language]),
+  ],
   controllers: [TestdataController],
   providers: [TestdataService],
 })

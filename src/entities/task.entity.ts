@@ -30,6 +30,9 @@ export class Task {
   @Column({ type: 'bigint' })
   taskCode: string;
 
+  @Column()
+  isDuplicate: boolean;
+
   @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 

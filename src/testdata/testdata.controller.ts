@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import {
   TestLanguageInputDto,
   TestRecruitInputDto,
@@ -12,11 +12,18 @@ import { TestdataService } from './testdata.service';
 export class TestdataController {
   constructor(private readonly testDataService: TestdataService) {}
 
-  @Get('recruit')
+  @Post('recruit')
   async putRecruitData(
-    @Body() testData: TestRecruitInputDto[],
+    @Body() { inputData }: { inputData: TestRecruitInputDto[] },
   ): Promise<Boolean> {
-    return this.testDataService.putRecruitData(testData);
+    return this.testDataService.putRecruitData(inputData);
+  }
+
+  @Post('connectrecruit')
+  async connectRecruitData(
+    @Body() { inputData }: { inputData: TestRecruitInputDto[] },
+  ): Promise<Boolean> {
+    return this.testDataService.connectRecruitData(inputData);
   }
 
   @Post('task')

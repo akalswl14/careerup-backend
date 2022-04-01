@@ -7,7 +7,6 @@ import {
   TestRecruitInputDto,
   TestStackDto,
   TestStackInputDto,
-  TestStackToLanguageDto,
   TestStackToLanguageInputDto,
   TestTaskDto,
   TestTaskInputDto,
@@ -56,6 +55,36 @@ export class TestdataService {
       });
     }
     await this.recruitsRepository.save(recruitInfo);
+    return true;
+  }
+
+  async connectRecruitData(testData: TestRecruitInputDto[]): Promise<Boolean> {
+    for (const targetData of testData) {
+      const { task: targetTask, stack: targetStack } = targetData;
+      const targetRecruit = await this.recruitsRepository.findOne({
+        where: {
+          recruitCode: targetData.recruitCode,
+        },
+      });
+      const taskData: Task[] = [];
+      for (const taskCode of targetTask) {
+        taskData.push(
+          await this.tasksRepository.findOne({ where: { taskCode } }),
+        );
+      }
+      const stackData: Techstack[] = [];
+      for (const stackCode of targetStack) {
+        stackData.push(
+          await this.techstacksRepository.findOne({ where: { stackCode } }),
+        );
+      }
+      await this.recruitsRepository.save({
+        ...targetRecruit,
+        tasks: taskData,
+        techstacks: stackData,
+        updatedAt: new Date(),
+      });
+    }
     return true;
   }
 

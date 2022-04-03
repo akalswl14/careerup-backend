@@ -8,6 +8,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TestdataModule } from './testdata/testdata.module';
 import { config } from 'ormconfig';
+import { TaskModule } from './task/task.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { config } from 'ormconfig';
     UserModule,
     AuthModule,
     TestdataModule,
+    TaskModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,4 @@
 import { PassportStrategy } from '@nestjs/passport';
-import { AuthService } from './auth.service';
 import { Strategy, VerifyCallback } from 'passport-github2';
 import { config } from 'dotenv';
 import { Injectable } from '@nestjs/common';
@@ -8,7 +7,7 @@ config();
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, 'github') {
-  constructor(private authService: AuthService) {
+  constructor() {
     super({
       clientID: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_SECRET,

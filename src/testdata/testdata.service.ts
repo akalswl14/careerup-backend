@@ -95,7 +95,7 @@ export class TestdataService {
     const taskInfo: TestTaskDto[] = [];
     for (const targetData of testData) {
       const { task: taskName } = targetData;
-      taskInfo.push({
+      const firstTask = await this.tasksRepository.save({
         taskName,
         taskCode: targetData['code1'],
         isDuplicate: false,
@@ -105,6 +105,7 @@ export class TestdataService {
           taskName,
           taskCode: targetData['code2'],
           isDuplicate: true,
+          duplicateId: firstTask.id ?? null,
         });
       }
       if (targetData['code3'] !== '') {
@@ -112,6 +113,7 @@ export class TestdataService {
           taskName,
           taskCode: targetData['code3'],
           isDuplicate: true,
+          duplicateId: firstTask.id ?? null,
         });
       }
     }

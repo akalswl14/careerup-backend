@@ -37,6 +37,9 @@ export class Task {
   @Column()
   isDuplicate: boolean;
 
+  @Column({ type: 'bigint', nullable: true })
+  duplicateId: string;
+
   @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;
 

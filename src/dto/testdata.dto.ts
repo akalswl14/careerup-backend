@@ -1,6 +1,3 @@
-import { Recruit } from 'src/entities/recruit.entity';
-import { Task } from 'src/entities/task.entity';
-import { Techstack } from 'src/entities/techstack.entity';
 import { Entity } from 'typeorm';
 
 @Entity()
@@ -38,6 +35,7 @@ export class TestTaskDto {
   taskName: string;
   taskCode: string;
   isDuplicate: boolean;
+  duplicateId?: string;
 }
 
 @Entity()

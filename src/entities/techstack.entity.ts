@@ -4,10 +4,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Language } from './language.entity';
+import { TrendStack } from './trend-stack.entity';
 
 @Entity()
 export class Techstack {
@@ -17,6 +19,9 @@ export class Techstack {
   @ManyToMany(() => Language)
   @JoinTable()
   languages: Language[];
+
+  @OneToMany(() => TrendStack, (trendStack) => trendStack.techstack)
+  trendStacks: TrendStack[];
 
   @Column({ length: '255' })
   stackName: string;

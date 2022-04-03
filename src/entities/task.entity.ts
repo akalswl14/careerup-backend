@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { StackToStack } from './stack-to-stack.entity';
 import { TaskToStack } from './task-to-stack.entity';
+import { TrendStack } from './trend-stack.entity';
 import { WishTask } from './wish-task.entity';
 
 @Entity()
@@ -23,6 +24,9 @@ export class Task {
 
   @OneToMany(() => StackToStack, (stackToStack) => stackToStack.task)
   stackToStacks: WishTask[];
+
+  @OneToMany(() => TrendStack, (trendStack) => trendStack.task)
+  trendStacks: TrendStack[];
 
   @Column({ length: '255' })
   taskName: string;

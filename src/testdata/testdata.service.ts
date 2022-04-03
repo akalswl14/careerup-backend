@@ -15,6 +15,7 @@ import { Language } from 'src/entities/language.entity';
 import { Recruit } from 'src/entities/recruit.entity';
 import { Task } from 'src/entities/task.entity';
 import { Techstack } from 'src/entities/techstack.entity';
+import { TrendStack } from 'src/entities/trend-stack.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -28,6 +29,8 @@ export class TestdataService {
     private readonly techstacksRepository: Repository<Techstack>,
     @InjectRepository(Language)
     private readonly languagesRepository: Repository<Language>,
+    @InjectRepository(TrendStack)
+    private readonly trendStacksRepository: Repository<TrendStack>,
   ) {}
 
   async putRecruitData(testData: TestRecruitInputDto[]): Promise<Boolean> {
@@ -201,5 +204,76 @@ export class TestdataService {
       }
     }
     return true;
+  }
+
+  async putTrendStackData(testData: any): Promise<Boolean> {
+    const inputTasks: string[] = Object.keys(testData);
+    for (const inputTask of inputTasks) {
+      const inputStacks = Object.keys(testData[inputTask]);
+      const taskId = this.convertWantedToSaramin(inputTask);
+      let priority = 1;
+      for (const stackName of inputStacks) {
+        const stackSearchResult = await this.searchByName(stackName);
+        if (!stackSearchResult) continue;
+        await this.trendStacksRepository.save({
+          priority,
+          techstack: { id: stackSearchResult.id },
+          task: { id: taskId },
+        });
+        priority++;
+      }
+    }
+    return true;
+  }
+
+  convertWantedToSaramin(inputCode: string): string {
+    const setting = {
+      '878': '1',
+      '961': '1',
+      '962': '1',
+      '960': '1',
+      '897': '1',
+      '1026': '2',
+      '877': '2',
+      '1024': '3',
+      '655': '4',
+      '1025': '4',
+      '1022': '4',
+      '872': '5',
+      '895': '5',
+      '893': '5',
+      '894': '5',
+      '1027': '6',
+      '677': '7',
+      '678': '7',
+      '10111': '7',
+      '873': '8',
+      '876': '9',
+      '10110': '10',
+      '671': '11',
+      '939': '12',
+      '669': '13',
+      '898': '13',
+      '958': '15',
+      '676': '18',
+      '674': '20',
+      '1634': '22',
+      '665': '25',
+      '672': '26',
+      '658': '27',
+      '661': '28',
+    };
+    return setting[inputCode];
+  }
+
+  async searchByName(stackName: string): Promise<Techstack> | null {
+    try {
+      const rtnTechstack = await this.techstacksRepository.findOne({
+        where: `"stackName" ILIKE '${stackName}'`,
+      });
+      return rtnTechstack;
+    } catch {
+      return null;
+    }
   }
 }

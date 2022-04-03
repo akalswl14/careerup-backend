@@ -53,4 +53,9 @@ export class TestdataController {
   ): Promise<Boolean> {
     return this.testDataService.putStackToLanguageData(inputData);
   }
+
+  @Post('trendstack')
+  async putTrendStackData(@Body() inputData: any): Promise<Boolean> {
+    return this.testDataService.putTrendStackData(inputData);
+  }
 }

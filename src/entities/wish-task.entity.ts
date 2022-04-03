@@ -20,6 +20,9 @@ export class WishTask {
   task: Task;
 
   @Column()
+  taskId: string;
+
+  @Column()
   priority: number;
 
   @CreateDateColumn({ type: 'timestamp without time zone' })

@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity()
+@Entity('School')
 export class School {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

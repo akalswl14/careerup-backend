@@ -8,7 +8,7 @@ import {
 import { ProcessStatus } from './enum';
 import { User } from './user.entity';
 
-@Entity()
+@Entity('ReportLog')
 export class ReportLog {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

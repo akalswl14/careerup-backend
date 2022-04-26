@@ -12,7 +12,7 @@ import { Task } from './task.entity';
 import { Techstack } from './techstack.entity';
 import { WishRecruit } from './wish-recruit.entity';
 
-@Entity()
+@Entity('Recruit')
 export class Recruit {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity('Language')
 export class Language {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

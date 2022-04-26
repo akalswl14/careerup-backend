@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity()
+@Entity('Career')
 export class Career {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

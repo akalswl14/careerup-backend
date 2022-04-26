@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { MonthlyReport } from './monthly-report.entity';
 
-@Entity()
+@Entity('Memoir')
 export class Memoir {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

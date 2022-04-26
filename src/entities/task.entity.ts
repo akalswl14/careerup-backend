@@ -11,7 +11,7 @@ import { TaskToStack } from './task-to-stack.entity';
 import { TrendStack } from './trend-stack.entity';
 import { WishTask } from './wish-task.entity';
 
-@Entity()
+@Entity('Task')
 export class Task {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

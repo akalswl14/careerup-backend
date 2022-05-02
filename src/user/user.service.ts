@@ -10,14 +10,14 @@ import {
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(User) private readonly users: Repository<User>,
+    @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
   async createAccount(
     createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
     try {
-      const exists = await this.users.findOne({
+      const exists = await this.usersRepository.findOne({
         gitUserId: createAccountInput.gitUserId,
       });
       if (exists) throw new ConflictException('이미 존재하는 유저입니다.');
@@ -27,7 +27,9 @@ export class UserService {
         gitUserId,
         profileUrl,
         username,
-      } = await this.users.save(this.users.create(createAccountInput));
+      } = await this.usersRepository.save(
+        this.usersRepository.create(createAccountInput),
+      );
       return {
         userId,
         gitUserId,

@@ -5,7 +5,7 @@ import { Recruit } from 'src/entities/recruit.entity';
 import { WishRecruit } from 'src/entities/wish-recruit.entity';
 import { WishTask } from 'src/entities/wish-task.entity';
 import { Pagination, PaginationOption } from 'src/paginate';
-import { Repository } from 'typeorm';
+import { getConnection, Repository } from 'typeorm';
 
 @Injectable()
 export class RecruitService {
@@ -88,5 +88,31 @@ export class RecruitService {
       total: totalRecruitNum,
       results: rtnRecruits,
     });
+  }
+
+  async toggleWishRecruit(recruitId: string, userId: string): Promise<Boolean> {
+    const wishCnt = await this.wishRecruitsRepository.count({
+      where: { user: { id: userId }, recruit: { id: recruitId } },
+    });
+    if (wishCnt > 0) {
+      await getConnection()
+        .createQueryBuilder()
+        .delete()
+        .from(WishRecruit)
+        .where('userId = :userId AND recruitId = :recruitId', {
+          userId,
+          recruitId,
+        })
+        .execute();
+      return false;
+    } else {
+      await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(WishRecruit)
+        .values({ user: { id: userId }, recruit: { id: recruitId } })
+        .execute();
+      return true;
+    }
   }
 }

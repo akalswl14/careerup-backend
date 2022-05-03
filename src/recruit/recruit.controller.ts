@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RecruitService } from './recruit.service';
 import {
@@ -49,5 +49,30 @@ export class RecruitController {
     @Query() { take = 10, page = 1 }: PaginationOption,
   ): Promise<Pagination<recruitThumbnailDto>> {
     return this.recruitService.getTodayRecruits({ take, page }, userId);
+  }
+
+  @Post('wish')
+  @ApiOperation({
+    summary: '공고 찜 API',
+    description: '공고에 대해 찜 등록 혹은 찜 해제를 수행함.',
+  })
+  @ApiQuery({
+    name: 'id',
+    type: 'number',
+    isArray: false,
+    required: true,
+    description: '찜 등록 / 해제할 공고 ID',
+  })
+  @ApiOkResponse({
+    description: '찜 등록시 true, 해제시 false를 반환함.',
+    type: 'boolean',
+    isArray: false,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async toggleWishRecruit(
+    @Req() { user: { userId } },
+    @Query() { id: recruitId }: { id: string },
+  ): Promise<Boolean> {
+    return this.recruitService.toggleWishRecruit(recruitId, userId);
   }
 }

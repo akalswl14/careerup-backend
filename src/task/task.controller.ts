@@ -19,7 +19,7 @@ import { TaskService } from './task.service';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  @Get('wishtask/option')
+  @Get('wish/option')
   @UseGuards(AuthGuard('jwt'))
   async getWishTaskOption(
     @Req() { user: { userId } },
@@ -28,7 +28,7 @@ export class TaskController {
     return this.taskService.getWishTaskOption({ userId, priority });
   }
 
-  @Post('wishtask')
+  @Post('wish')
   @UseGuards(AuthGuard('jwt'))
   async setWishTask(
     @Req() { user: { userId } },
@@ -37,7 +37,7 @@ export class TaskController {
     return this.taskService.setWishTask({ wishTask, userId });
   }
 
-  @Get('wishtask')
+  @Get('wish')
   @UseGuards(AuthGuard('jwt'))
   async getWishTask(@Req() { user: { userId } }): Promise<userWishTaskDto[]> {
     return this.taskService.getWishTask(userId);

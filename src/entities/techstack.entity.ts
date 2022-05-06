@@ -11,7 +11,7 @@ import {
 import { Language } from './language.entity';
 import { TrendStack } from './trend-stack.entity';
 
-@Entity('TechStack')
+@Entity('techstack')
 export class Techstack {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

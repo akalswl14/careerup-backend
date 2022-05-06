@@ -9,7 +9,7 @@ import {
 import { Task } from './task.entity';
 import { Techstack } from './techstack.entity';
 
-@Entity('TrendStack')
+@Entity('trend_stack')
 export class TrendStack {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

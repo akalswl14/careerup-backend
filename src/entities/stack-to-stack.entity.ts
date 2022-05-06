@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { Task } from './task.entity';
 
-@Entity('StackToStack')
+@Entity('stack_to_stack')
 export class StackToStack {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

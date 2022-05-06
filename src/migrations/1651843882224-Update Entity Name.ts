@@ -1,0 +1,122 @@
+import {MigrationInterface, QueryRunner} from "typeorm";
+
+export class UpdateEntityName1651843882224 implements MigrationInterface {
+    name = 'UpdateEntityName1651843882224'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`CREATE TABLE "oauth_info" ("id" BIGSERIAL NOT NULL, "accessToken" character varying(255) NOT NULL, "provider" character varying(255) NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_2394e17123d75ee26e153b98180" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "login_info" ("id" BIGSERIAL NOT NULL, "loginSuccess" boolean NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_3c4bafadfa87819e057d90a4603" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "school" ("id" BIGSERIAL NOT NULL, "title" character varying(255) NOT NULL, "schoolStartDate" TIMESTAMP NOT NULL, "schoolEndDate" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_57836c3fe2f2c7734b20911755e" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."portfolio_log_portfoliostatus_enum" AS ENUM('start', 'onprogress', 'success', 'fail')`);
+        await queryRunner.query(`CREATE TABLE "portfolio_log" ("id" BIGSERIAL NOT NULL, "portfolioStatus" "public"."portfolio_log_portfoliostatus_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_6a03ec781558d5534d60661713a" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TYPE "public"."report_log_reportstatus_enum" AS ENUM('start', 'onprogress', 'success', 'fail')`);
+        await queryRunner.query(`CREATE TABLE "report_log" ("id" BIGSERIAL NOT NULL, "reportStatus" "public"."report_log_reportstatus_enum" NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_c4264e39e9de4e30211fdede3fc" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "repository" ("id" BIGSERIAL NOT NULL, "gitRepoId" bigint NOT NULL, "repoName" character varying(255) NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_b842c26651c6fc0b9ccd1c530e2" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "portfolio" ("id" BIGSERIAL NOT NULL, "title" character varying(255) NOT NULL, "description" text NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_6936bb92ca4b7cda0ff28794e48" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "monthly_report" ("id" BIGSERIAL NOT NULL, "repoIds" bigint NOT NULL, "commitNum" integer DEFAULT '0', "momCommitNum" integer DEFAULT '0', "commitDetail" json NOT NULL, "starNum" integer DEFAULT '0', "mostStarRepo" character varying(255), "languageDetail" json NOT NULL, "stackName" character varying(255), "stackLanguage" character varying(255), "stackTask" character varying(255), "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_fe8b38d177d9ee8af29e9d970e9" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "stack_to_stack" ("id" BIGSERIAL NOT NULL, "stack" character varying NOT NULL, "innerStack" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "taskId" bigint NOT NULL, CONSTRAINT "PK_57c6bc8b41e8e403e40fec63ddb" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "task_to_stack" ("id" BIGSERIAL NOT NULL, "stack" character varying NOT NULL, "num" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "taskId" bigint NOT NULL, CONSTRAINT "PK_23b87435a4ef49831c590a52cff" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "language" ("id" BIGSERIAL NOT NULL, "languageName" character varying(255) NOT NULL, "languageCode" bigint NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_cc0a99e710eb3733f6fb42b1d4c" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "techstack" ("id" BIGSERIAL NOT NULL, "stackName" character varying(255) NOT NULL, "stackCode" bigint NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_db9882a7861a0e7b04f7f97a26e" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "trend_stack" ("id" BIGSERIAL NOT NULL, "priority" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "taskId" bigint NOT NULL, "techstackId" bigint NOT NULL, CONSTRAINT "PK_e78af9e22c8e11d0aaf543ff1f6" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "wish_task" ("id" BIGSERIAL NOT NULL, "taskId" bigint NOT NULL, "priority" integer NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_7bb1ba3eabc3a8b18054e1e5ee1" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "task" ("id" BIGSERIAL NOT NULL, "taskName" character varying(255) NOT NULL, "taskCode" bigint NOT NULL, "isDuplicate" boolean NOT NULL, "duplicateId" bigint, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_fb213f79ee45060ba925ecd576e" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "recruit" ("id" BIGSERIAL NOT NULL, "companyName" character varying(255) NOT NULL, "recruitTitle" character varying(255) NOT NULL, "recruitCareer" character varying(255), "recruitSchool" character varying(255), "recruitCondition" character varying(255), "recruitLocation" character varying(255), "dueDate" TIMESTAMP, "dueType" integer NOT NULL, "recruitCode" bigint NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_460dcd259f5da1a3a22273ce167" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "wish_recruit" ("id" BIGSERIAL NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, "recruitId" bigint NOT NULL, CONSTRAINT "PK_77c29e92f316ba889ac33f71d7a" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "user" ("id" BIGSERIAL NOT NULL, "gitUserId" bigint NOT NULL, "userAccessToken" character varying, "username" character varying(40) NOT NULL, "email" character varying(255), "profileUrl" character varying(255) NOT NULL, "settingAppPush" boolean NOT NULL DEFAULT false, "settingCoupon" boolean NOT NULL DEFAULT false, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "career" ("id" BIGSERIAL NOT NULL, "title" character varying(255) NOT NULL, "careerStartDate" TIMESTAMP NOT NULL, "careerEndDate" TIMESTAMP, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "userId" bigint NOT NULL, CONSTRAINT "PK_5f694c0aa9babcae2c4ad61c7d0" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "memoir" ("id" BIGSERIAL NOT NULL, "description" text, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), "updatedAt" TIMESTAMP NOT NULL DEFAULT now(), "monthlyReportId" bigint, CONSTRAINT "REL_d6cec39cb4a2c65d2823497d8d" UNIQUE ("monthlyReportId"), CONSTRAINT "PK_47d2695897962ed2c99e108d944" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "techstack_languages_language" ("techstackId" bigint NOT NULL, "languageId" bigint NOT NULL, CONSTRAINT "PK_119af5b8b5f95cd6553daa52681" PRIMARY KEY ("techstackId", "languageId"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_f47d70d514da62546ab9971da4" ON "techstack_languages_language" ("techstackId") `);
+        await queryRunner.query(`CREATE INDEX "IDX_f3cf1d1e7bb01708dca03b3374" ON "techstack_languages_language" ("languageId") `);
+        await queryRunner.query(`CREATE TABLE "recruit_techstacks_techstack" ("recruitId" bigint NOT NULL, "techstackId" bigint NOT NULL, CONSTRAINT "PK_1132afe30b86d80c95357cbfe07" PRIMARY KEY ("recruitId", "techstackId"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_fa279a49c9c4dafc13c0b2af6d" ON "recruit_techstacks_techstack" ("recruitId") `);
+        await queryRunner.query(`CREATE INDEX "IDX_13ecb9da828a3e22d73dd95fae" ON "recruit_techstacks_techstack" ("techstackId") `);
+        await queryRunner.query(`CREATE TABLE "recruit_tasks_task" ("recruitId" bigint NOT NULL, "taskId" bigint NOT NULL, CONSTRAINT "PK_0e56e8a8775a12f1f369f6ade06" PRIMARY KEY ("recruitId", "taskId"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_eb234c3bd7952d66ffdec42e2a" ON "recruit_tasks_task" ("recruitId") `);
+        await queryRunner.query(`CREATE INDEX "IDX_557c1995bd1c6ed75a6fb28ffc" ON "recruit_tasks_task" ("taskId") `);
+        await queryRunner.query(`ALTER TABLE "oauth_info" ADD CONSTRAINT "FK_f76503c32703b9970ae635c439a" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "login_info" ADD CONSTRAINT "FK_3dc7622147290beb61398a7e4f6" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "school" ADD CONSTRAINT "FK_065d8d144bc7f8e21a21984a358" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "portfolio_log" ADD CONSTRAINT "FK_0d641ca1a3a61b94349c6b2a3cd" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "report_log" ADD CONSTRAINT "FK_6115dc1a759607047c157cf7830" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "repository" ADD CONSTRAINT "FK_19cf11998e1776961d150dbdd43" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "portfolio" ADD CONSTRAINT "FK_9d041c43c782a9135df1388ae16" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "monthly_report" ADD CONSTRAINT "FK_ed957e3ff7f6d16edaa59f0e904" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "stack_to_stack" ADD CONSTRAINT "FK_254c75d7deddf85cd4b74b8c3f0" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "task_to_stack" ADD CONSTRAINT "FK_c27b6c8376687167ba1ebc12805" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "trend_stack" ADD CONSTRAINT "FK_77588b3fceea829da5ddbd93256" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "trend_stack" ADD CONSTRAINT "FK_6b7493dc3062fe85d0496f578ef" FOREIGN KEY ("techstackId") REFERENCES "techstack"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "wish_task" ADD CONSTRAINT "FK_487c72ced2e111eb4090548aa9d" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "wish_task" ADD CONSTRAINT "FK_5f81f789ab45f66d807a443469e" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "wish_recruit" ADD CONSTRAINT "FK_c81ffb31cb55cca0acd063a2be4" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "wish_recruit" ADD CONSTRAINT "FK_ccad0f42679c25e4f38d171da9e" FOREIGN KEY ("recruitId") REFERENCES "recruit"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "career" ADD CONSTRAINT "FK_e03cdf15acee0efae133fb8afef" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "memoir" ADD CONSTRAINT "FK_d6cec39cb4a2c65d2823497d8d0" FOREIGN KEY ("monthlyReportId") REFERENCES "monthly_report"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "techstack_languages_language" ADD CONSTRAINT "FK_f47d70d514da62546ab9971da43" FOREIGN KEY ("techstackId") REFERENCES "techstack"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "techstack_languages_language" ADD CONSTRAINT "FK_f3cf1d1e7bb01708dca03b33742" FOREIGN KEY ("languageId") REFERENCES "language"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "recruit_techstacks_techstack" ADD CONSTRAINT "FK_fa279a49c9c4dafc13c0b2af6d0" FOREIGN KEY ("recruitId") REFERENCES "recruit"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "recruit_techstacks_techstack" ADD CONSTRAINT "FK_13ecb9da828a3e22d73dd95fae9" FOREIGN KEY ("techstackId") REFERENCES "techstack"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "recruit_tasks_task" ADD CONSTRAINT "FK_eb234c3bd7952d66ffdec42e2aa" FOREIGN KEY ("recruitId") REFERENCES "recruit"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "recruit_tasks_task" ADD CONSTRAINT "FK_557c1995bd1c6ed75a6fb28ffcd" FOREIGN KEY ("taskId") REFERENCES "task"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "recruit_tasks_task" DROP CONSTRAINT "FK_557c1995bd1c6ed75a6fb28ffcd"`);
+        await queryRunner.query(`ALTER TABLE "recruit_tasks_task" DROP CONSTRAINT "FK_eb234c3bd7952d66ffdec42e2aa"`);
+        await queryRunner.query(`ALTER TABLE "recruit_techstacks_techstack" DROP CONSTRAINT "FK_13ecb9da828a3e22d73dd95fae9"`);
+        await queryRunner.query(`ALTER TABLE "recruit_techstacks_techstack" DROP CONSTRAINT "FK_fa279a49c9c4dafc13c0b2af6d0"`);
+        await queryRunner.query(`ALTER TABLE "techstack_languages_language" DROP CONSTRAINT "FK_f3cf1d1e7bb01708dca03b33742"`);
+        await queryRunner.query(`ALTER TABLE "techstack_languages_language" DROP CONSTRAINT "FK_f47d70d514da62546ab9971da43"`);
+        await queryRunner.query(`ALTER TABLE "memoir" DROP CONSTRAINT "FK_d6cec39cb4a2c65d2823497d8d0"`);
+        await queryRunner.query(`ALTER TABLE "career" DROP CONSTRAINT "FK_e03cdf15acee0efae133fb8afef"`);
+        await queryRunner.query(`ALTER TABLE "wish_recruit" DROP CONSTRAINT "FK_ccad0f42679c25e4f38d171da9e"`);
+        await queryRunner.query(`ALTER TABLE "wish_recruit" DROP CONSTRAINT "FK_c81ffb31cb55cca0acd063a2be4"`);
+        await queryRunner.query(`ALTER TABLE "wish_task" DROP CONSTRAINT "FK_5f81f789ab45f66d807a443469e"`);
+        await queryRunner.query(`ALTER TABLE "wish_task" DROP CONSTRAINT "FK_487c72ced2e111eb4090548aa9d"`);
+        await queryRunner.query(`ALTER TABLE "trend_stack" DROP CONSTRAINT "FK_6b7493dc3062fe85d0496f578ef"`);
+        await queryRunner.query(`ALTER TABLE "trend_stack" DROP CONSTRAINT "FK_77588b3fceea829da5ddbd93256"`);
+        await queryRunner.query(`ALTER TABLE "task_to_stack" DROP CONSTRAINT "FK_c27b6c8376687167ba1ebc12805"`);
+        await queryRunner.query(`ALTER TABLE "stack_to_stack" DROP CONSTRAINT "FK_254c75d7deddf85cd4b74b8c3f0"`);
+        await queryRunner.query(`ALTER TABLE "monthly_report" DROP CONSTRAINT "FK_ed957e3ff7f6d16edaa59f0e904"`);
+        await queryRunner.query(`ALTER TABLE "portfolio" DROP CONSTRAINT "FK_9d041c43c782a9135df1388ae16"`);
+        await queryRunner.query(`ALTER TABLE "repository" DROP CONSTRAINT "FK_19cf11998e1776961d150dbdd43"`);
+        await queryRunner.query(`ALTER TABLE "report_log" DROP CONSTRAINT "FK_6115dc1a759607047c157cf7830"`);
+        await queryRunner.query(`ALTER TABLE "portfolio_log" DROP CONSTRAINT "FK_0d641ca1a3a61b94349c6b2a3cd"`);
+        await queryRunner.query(`ALTER TABLE "school" DROP CONSTRAINT "FK_065d8d144bc7f8e21a21984a358"`);
+        await queryRunner.query(`ALTER TABLE "login_info" DROP CONSTRAINT "FK_3dc7622147290beb61398a7e4f6"`);
+        await queryRunner.query(`ALTER TABLE "oauth_info" DROP CONSTRAINT "FK_f76503c32703b9970ae635c439a"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_557c1995bd1c6ed75a6fb28ffc"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_eb234c3bd7952d66ffdec42e2a"`);
+        await queryRunner.query(`DROP TABLE "recruit_tasks_task"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_13ecb9da828a3e22d73dd95fae"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_fa279a49c9c4dafc13c0b2af6d"`);
+        await queryRunner.query(`DROP TABLE "recruit_techstacks_techstack"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_f3cf1d1e7bb01708dca03b3374"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_f47d70d514da62546ab9971da4"`);
+        await queryRunner.query(`DROP TABLE "techstack_languages_language"`);
+        await queryRunner.query(`DROP TABLE "memoir"`);
+        await queryRunner.query(`DROP TABLE "career"`);
+        await queryRunner.query(`DROP TABLE "user"`);
+        await queryRunner.query(`DROP TABLE "wish_recruit"`);
+        await queryRunner.query(`DROP TABLE "recruit"`);
+        await queryRunner.query(`DROP TABLE "task"`);
+        await queryRunner.query(`DROP TABLE "wish_task"`);
+        await queryRunner.query(`DROP TABLE "trend_stack"`);
+        await queryRunner.query(`DROP TABLE "techstack"`);
+        await queryRunner.query(`DROP TABLE "language"`);
+        await queryRunner.query(`DROP TABLE "task_to_stack"`);
+        await queryRunner.query(`DROP TABLE "stack_to_stack"`);
+        await queryRunner.query(`DROP TABLE "monthly_report"`);
+        await queryRunner.query(`DROP TABLE "portfolio"`);
+        await queryRunner.query(`DROP TABLE "repository"`);
+        await queryRunner.query(`DROP TABLE "report_log"`);
+        await queryRunner.query(`DROP TYPE "public"."report_log_reportstatus_enum"`);
+        await queryRunner.query(`DROP TABLE "portfolio_log"`);
+        await queryRunner.query(`DROP TYPE "public"."portfolio_log_portfoliostatus_enum"`);
+        await queryRunner.query(`DROP TABLE "school"`);
+        await queryRunner.query(`DROP TABLE "login_info"`);
+        await queryRunner.query(`DROP TABLE "oauth_info"`);
+    }
+
+}

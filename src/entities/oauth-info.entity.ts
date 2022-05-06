@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-@Entity('OauthInfo')
+@Entity('oauth_info')
 export class OauthInfo {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

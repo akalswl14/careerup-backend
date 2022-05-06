@@ -18,7 +18,7 @@ import { MonthlyReport } from './monthly-report.entity';
 import { WishRecruit } from './wish-recruit.entity';
 import { WishTask } from './wish-task.entity';
 
-@Entity('User')
+@Entity('user')
 export class User {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

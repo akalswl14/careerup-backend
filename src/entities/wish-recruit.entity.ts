@@ -7,7 +7,7 @@ import {
 import { Recruit } from './recruit.entity';
 import { User } from './user.entity';
 
-@Entity('WishRecruit')
+@Entity('wish_recruit')
 export class WishRecruit {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

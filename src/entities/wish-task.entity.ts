@@ -8,7 +8,7 @@ import {
 import { Task } from './task.entity';
 import { User } from './user.entity';
 
-@Entity('WishTask')
+@Entity('wish_task')
 export class WishTask {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;

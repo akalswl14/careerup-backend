@@ -42,7 +42,8 @@ export class TestdataController {
   @Post('connectrecruit')
   @ApiOperation({
     summary: '공고 데이터 연결 API',
-    description: '주어진 공고 데이터에 해당하는 Task와 Stack을 연결함.',
+    description:
+      '주어진 공고 데이터에 해당하는 Task와 Stack을 연결함. 현재는 타 API 서버 이용을 권장함.',
   })
   @ApiBody({
     type: 'json',

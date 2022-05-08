@@ -210,16 +210,35 @@ export class TestdataService {
 
   async putTrendStackData(testData: any): Promise<Boolean> {
     const inputTasks: string[] = Object.keys(testData);
-    for (const inputTask of inputTasks) {
-      const inputStacks = Object.keys(testData[inputTask]);
-      const taskId = this.convertWantedToSaramin(inputTask);
+    for (const taskCode of inputTasks) {
+      const inputStacks = Object.keys(testData[taskCode]);
+      const { id: taskId } = await this.tasksRepository.findOne({
+        where: { taskCode },
+        select: ['id'],
+      });
       let priority = 1;
       for (const stackName of inputStacks) {
         const stackSearchResult = await this.searchByName(stackName);
-        if (!stackSearchResult) continue;
+        let techStackId;
+        if (!stackSearchResult) {
+          const validateResult = this.validateStackName(stackName);
+          if (validateResult == false) {
+            // TrendStack 삽입 불가 stack 데이터
+            continue;
+          } else {
+            // ILIKE 검색으로 DB에서 스택 검색은 되지 않았으나, 연결 가능한 스택의 경우
+            const { id } = await this.techstacksRepository.findOne({
+              where: { stackCode: validateResult },
+              select: ['id'],
+            });
+            techStackId = id;
+          }
+        } else {
+          techStackId = stackSearchResult.id;
+        }
         await this.trendStacksRepository.save({
           priority,
-          techstack: { id: stackSearchResult.id },
+          techstack: { id: techStackId },
           task: { id: taskId },
         });
         priority++;
@@ -266,6 +285,45 @@ export class TestdataService {
       '661': '28',
     };
     return setting[inputCode];
+  }
+
+  validateStackName(inputStack: string): string | false {
+    const validateSet = {
+      d: false,
+      c: '206',
+      qa: false,
+      api: false,
+      web: false,
+      ai: false,
+      ml: false,
+      cloud: false,
+      restful: false,
+      nft: false,
+      nodejs: '258',
+      dapp: false,
+      ui: false,
+      po: false,
+      b: false,
+      ux: false,
+      isms: false,
+      p: false,
+      iso: false,
+      office: false,
+      ms: false,
+      jira: false,
+      istqb: false,
+      csts: false,
+      devops: false,
+      sw: false,
+      mcu: false,
+      application: false,
+      design: false,
+      w: false,
+      iot: false,
+      learning: false,
+      '.net': '199',
+    };
+    return validateSet[inputStack] ?? false;
   }
 
   async searchByName(stackName: string): Promise<Techstack> | null {

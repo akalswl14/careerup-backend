@@ -1,8 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  recruitDetailDto,
   recruitThumbnailDto,
   searchRecruitQueryDto,
+  tagThumbnailDto,
 } from 'src/dto/recruit.dto';
 import { Recruit } from 'src/entities/recruit.entity';
 import { TrendStack } from 'src/entities/trend-stack.entity';
@@ -217,6 +219,45 @@ export class RecruitService {
     });
   }
 
+  async getRecruitDetail(
+    recruitId: string,
+    userId: string,
+  ): Promise<recruitDetailDto> {
+    const recruitResult = await this.recruitsRepository
+      .createQueryBuilder('recruit')
+      .where('recruit.id =:recruitId', { recruitId })
+      .leftJoinAndSelect('recruit.tasks', 'task')
+      .leftJoinAndSelect('recruit.techstacks', 'techstack')
+      .getOne();
+
+    if (!recruitResult)
+      throw new NotFoundException(`조회할 수 없는 recruit 입니다.`);
+
+    const recruitTasks: tagThumbnailDto[] = recruitResult.tasks.map(
+      ({ id, taskName }) => ({ id, type: 0, tagName: taskName }),
+    );
+    const recruitTechstacks: tagThumbnailDto[] = recruitResult.techstacks.map(
+      ({ id, stackName }) => ({ id, type: 1, tagName: stackName }),
+    );
+    const cntWishRecruits = await this.wishRecruitsRepository.count({
+      recruit: { id: recruitId },
+      user: { id: userId },
+    });
+    return {
+      id: recruitId,
+      title: recruitResult.recruitTitle,
+      companyName: recruitResult.companyName,
+      recruitTag: [...recruitTasks, ...recruitTechstacks],
+      career: recruitResult.recruitCareer,
+      school: recruitResult.recruitSchool,
+      condition: recruitResult.recruitCondition,
+      location: recruitResult.recruitLocation,
+      dueDate: recruitResult.dueDate,
+      dueType: recruitResult.dueType,
+      saraminUri: recruitResult.recruitCode,
+      isWish: cntWishRecruits > 0 ? true : false,
+    };
+  }
   async getMainRecruitsWithTags(
     taskId: string,
     techstackId: string,

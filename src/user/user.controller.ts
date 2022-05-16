@@ -1,4 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { userProfileDto } from 'src/dto/user.dto';
 import {
   CreateAccountInput,
   CreateAccountOutput,
@@ -9,14 +12,17 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Post('create')
-  // async createAccount(
-  //   @Body() userData: CreateAccountInput,
-  // ): Promise<CreateAccountOutput> {
-  //   return this.userService.createAccount(userData);
-  // }
-
-  // // @Post('login')
-  // // async login();
-  // // git id 만 던져주면 안되잖아?!
+  @Get('profile')
+  @ApiOperation({
+    summary: '사용자 프로필 반환 API',
+    description: '프로필 페이지의 사용자 프로필 정보를 반환함.',
+  })
+  @ApiOkResponse({
+    description: '프로필 페이지의 사용자 프로필 정보를 반환함.',
+    type: userProfileDto,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async getUserProfile(@Req() { user: { userId } }): Promise<userProfileDto> {
+    return this.userService.getUserProfile(userId);
+  }
 }

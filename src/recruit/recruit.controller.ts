@@ -164,17 +164,14 @@ export class RecruitController {
     return this.recruitService.getTodayRecruits(searchQuery, userId);
   }
 
-  @Get(':id')
+  @Get('/:id')
   @ApiOperation({
-    summary: '분석 결과 추천 공고 API',
-    description:
-      '서비스 메인 화면 내 분석 결과 추천 공고 정보를 반환한다.\n반환 공고는 7일 내의 공고 & dueDate가 null 이거나 오늘 이후인 공고로 제한함.\n오늘의 공고와 중복되지 않도록하는 처리는 아직 개발되지 않음.(즉, 오늘의 공고와 중복될 수 있음)',
+    summary: '공고 상세 정보 API',
+    description: '공고 상세 정보 반환',
   })
   @ApiOkResponse({
-    description:
-      '조회한 분석 결과 추천 공고를 반환한다. 기본 알고리즘은 다음과 같다. \n\n1. 사용자의 관심직무 1순위 + 트렌드 분석결과에 따른 해당 연관 스택 1위\n2.사용자의 관심직무 1순위 + 트렌드 분석결과에 따른 해당 연관 스택 2위\n3.사용자의 관심직무 1순위 + 트렌드 분석결과에 따른 해당 연관 스택 3위',
-    type: recruitThumbnailDto,
-    isArray: true,
+    description: '해당 공고의 상세 페이지에 대한, 공고 상세 정보를 반환한다.',
+    type: recruitDetailDto,
   })
   @ApiParam({
     name: 'id',

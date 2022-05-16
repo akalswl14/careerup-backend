@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { recruitThumbnailDto } from 'src/dto/recruit.dto';
+import {
+  recruitThumbnailDto,
+  searchRecruitQueryDto,
+} from 'src/dto/recruit.dto';
 import { Recruit } from 'src/entities/recruit.entity';
 import { TrendStack } from 'src/entities/trend-stack.entity';
 import { WishRecruit } from 'src/entities/wish-recruit.entity';
 import { WishTask } from 'src/entities/wish-task.entity';
 import { Pagination, PaginationOption } from 'src/paginate';
-import { getConnection, Repository } from 'typeorm';
+import { getConnection, OrderByCondition, Repository } from 'typeorm';
 
 @Injectable()
 export class RecruitService {
@@ -150,6 +153,68 @@ export class RecruitService {
       }
     }
     return this.formatRecruitThumbnail(queryRecruits, userId, 4);
+  }
+
+  async getSearchRecruits(
+    {
+      take = 10,
+      page = 1,
+      type = 0,
+      keyword,
+      order = 0,
+    }: searchRecruitQueryDto,
+    userId: string,
+  ): Promise<Pagination<recruitThumbnailDto>> {
+    const innerJoinOption =
+      type == 1
+        ? {
+            subQueryFactory: 'recruit.techstacks',
+            alias: 'techstack',
+            condition: 'techstack.id =:keyword',
+            parameters: { keyword },
+          }
+        : {
+            subQueryFactory: 'recruit.tasks',
+            alias: 'task',
+            condition: 'task.id =:keyword',
+            parameters: { keyword },
+          };
+    const orderByOption: OrderByCondition =
+      order == 0
+        ? {
+            'recruit.createdAt': 'DESC',
+            'recruit.dueDate': { order: 'ASC', nulls: 'NULLS LAST' },
+            'recruit.id': 'DESC',
+          }
+        : {
+            'recruit.dueDate': { order: 'ASC', nulls: 'NULLS LAST' },
+            'recruit.createdAt': 'DESC',
+            'recruit.id': 'DESC',
+          };
+    const [searchRecruits, totalRecruitNum] = await this.recruitsRepository
+      .createQueryBuilder('recruit')
+      .innerJoinAndSelect(
+        innerJoinOption.subQueryFactory,
+        innerJoinOption.alias,
+        innerJoinOption.condition,
+        innerJoinOption.parameters,
+      )
+      .where('( recruit.dueDate >= :nowDate OR recruit.dueDate IS NULL )', {
+        nowDate: new Date(
+          new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
+        ),
+      })
+      .take(take)
+      .skip(take * (page - 1))
+      .orderBy(orderByOption)
+      .getManyAndCount();
+
+    const rtnRecruits: recruitThumbnailDto[] =
+      await this.formatRecruitThumbnail(searchRecruits, userId);
+    return new Pagination<recruitThumbnailDto>({
+      total: totalRecruitNum,
+      results: rtnRecruits,
+    });
   }
 
   async getMainRecruitsWithTags(

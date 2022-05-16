@@ -97,4 +97,18 @@ export class TaskController {
   async getWishTask(@Req() { user: { userId } }): Promise<userWishTaskDto[]> {
     return this.taskService.getWishTask(userId);
   }
+
+  @Get('search')
+  @ApiOperation({
+    summary: '검색 Task 옵션 목록 API',
+    description: '검색 페이지에서, 선택할 Task 목록을 반환한다.',
+  })
+  @ApiOkResponse({
+    description: '희망 직무로 선택한 Task 목록을 반환한다. ',
+    type: searchOptionDto,
+    isArray: true,
+  })
+  async getSearchTask(): Promise<searchOptionDto[]> {
+    return this.taskService.getSearchTask();
+  }
 }

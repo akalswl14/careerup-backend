@@ -61,6 +61,11 @@ $ npm run test:cov
 - PostgreSQL 14.2
 - 라비앙팀 노션을 참고해주세요
 
+## Swagger API Documentation
+
+1. $ npm run start:dev
+2. http://localhost:3000/api-docs/ 로 접근!
+
 ## Another Setting
 
 .env를 @akalswl14 에게 요청해주세요!

@@ -175,8 +175,7 @@ export class RecruitController {
   })
   @ApiParam({
     name: 'id',
-    description: '공고 ID',
-    type: BigInt,
+    format: 'bigint',
   })
   @UseGuards(AuthGuard('jwt'))
   async getRecruitDetail(

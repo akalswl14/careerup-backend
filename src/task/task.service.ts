@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { searchOptionDto } from 'src/dto/output.dto';
 import { userWishTaskDto, wishTaskOptionDto } from 'src/dto/task.dto';
 import { Task } from 'src/entities/task.entity';
 import { User } from 'src/entities/user.entity';
@@ -106,5 +107,18 @@ export class TaskService {
       });
     }
     await this.wishTasksRepository.save(createWishTaskData);
+  }
+
+  async getSearchTask(): Promise<searchOptionDto[]> {
+    const taskResult = await this.tasksRepository.find({
+      where: { isDuplicate: false },
+      select: ['id', 'taskName'],
+      order: { id: 'ASC' },
+    });
+    return taskResult.map(({ id, taskName }) => ({
+      id,
+      optionName: taskName,
+      type: 0,
+    }));
   }
 }

@@ -138,7 +138,7 @@ export class recruitDetailDto {
 
 @Entity()
 export class tagThumbnailDto {
-  @IsNumber()
+  @IsNumberString()
   @ApiProperty({ description: '태그 ID. task/techstack ID', required: true })
   id: string;
 
@@ -149,7 +149,7 @@ export class tagThumbnailDto {
   })
   type: number;
 
-  @IsNumberString()
+  @IsString()
   @ApiProperty({ description: '태그 이름', required: true })
   tagName: string;
 }

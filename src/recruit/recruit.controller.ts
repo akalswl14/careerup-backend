@@ -15,6 +15,7 @@ import {
   ApiOkResponse,
   ApiQuery,
   ApiBearerAuth,
+  ApiParam,
 } from '@nestjs/swagger';
 import {
   recruitDetailDto,
@@ -174,6 +175,11 @@ export class RecruitController {
       '조회한 분석 결과 추천 공고를 반환한다. 기본 알고리즘은 다음과 같다. \n\n1. 사용자의 관심직무 1순위 + 트렌드 분석결과에 따른 해당 연관 스택 1위\n2.사용자의 관심직무 1순위 + 트렌드 분석결과에 따른 해당 연관 스택 2위\n3.사용자의 관심직무 1순위 + 트렌드 분석결과에 따른 해당 연관 스택 3위',
     type: recruitThumbnailDto,
     isArray: true,
+  })
+  @ApiParam({
+    name: 'id',
+    description: '공고 ID',
+    type: BigInt,
   })
   @UseGuards(AuthGuard('jwt'))
   async getRecruitDetail(

@@ -23,6 +23,12 @@ export class TrendStack {
   techstack: Techstack;
 
   @Column()
+  taskId: string;
+
+  @Column()
+  techstackId: string;
+
+  @Column()
   priority: number;
 
   @CreateDateColumn({ type: 'timestamp without time zone' })

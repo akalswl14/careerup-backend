@@ -11,6 +11,7 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBearerAuth,
   ApiBody,
+  ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
   ApiQuery,
@@ -70,7 +71,7 @@ export class TaskController {
     description: '사용자 희망 직무 선택 반영 입력값',
     isArray: true,
   })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: '성공적으로 반영됨. ',
   })
   @UseGuards(AuthGuard('jwt'))

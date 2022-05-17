@@ -105,7 +105,6 @@ export class RecruitService {
   }
 
   async getRecommendRecruits(userId: string): Promise<recruitThumbnailDto[]> {
-    const rtnRecruits: recruitThumbnailDto[] = [];
     let queryRecruits: Recruit[] = [];
     // 사용자의 희망 직무 반환
     const wishTaskResult = await this.wishTasksRepository.find({

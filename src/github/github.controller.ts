@@ -39,7 +39,8 @@ export class GithubController {
   @Post('repository')
   @ApiOperation({
     summary: '유저 Repository 선택 반영 API',
-    description: '유저의 Repository 선택을 반영한다.',
+    description:
+      '유저의 Repository 선택을 반영한다.\n이번 달에, 분석 기록이 없다면 내부적으로 분석 실행 준비 상태가 된다.',
   })
   @ApiBody({
     type: repositoryDto,

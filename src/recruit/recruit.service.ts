@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   recruitDetailDto,
@@ -37,6 +41,8 @@ export class RecruitService {
       select: ['taskId'],
       order: { priority: 'ASC' },
     });
+    if (wishTasks.length == 0)
+      throw new ForbiddenException(`선택한 관심 직무가 없습니다.`);
     const taskIdList = wishTasks.map(({ taskId }) => taskId);
 
     const [taskRecruits, totalRecruitNum] = await this.recruitsRepository
@@ -112,8 +118,8 @@ export class RecruitService {
       select: ['taskId'],
       order: { priority: 'ASC' },
     });
-    if (!wishTaskResult)
-      throw new NotFoundException(`wish_task 결과가 없습니다`);
+    if (wishTaskResult.length == 0)
+      throw new ForbiddenException(`선택한 관심 직무가 없습니다.`);
     // 사용자의 희망 직무별 trendstack 찾아서 recruit 데이터 반환
     for (const { taskId: wishTaskId } of wishTaskResult) {
       const trendStackResult = await this.trendStacksRepository.find({

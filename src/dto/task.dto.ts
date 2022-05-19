@@ -8,9 +8,9 @@ export class setWishTaskDto {
   @ApiProperty({ description: '희망 직무 Task ID', required: true })
   id: string;
 
-  @IsNumberString()
+  @IsInt()
   @ApiProperty({ description: '희망 직무 선택 순위', required: true })
-  priority: string;
+  priority: number;
 }
 
 @Entity()
@@ -44,7 +44,7 @@ export class userWishTaskDto {
 }
 
 export class priorityQueryDto {
-  @IsNumberString()
+  @IsInt()
   @ApiProperty({ description: '희망 직무 선택 순위', required: true })
-  priority: string;
+  priority: number;
 }

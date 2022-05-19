@@ -8,7 +8,11 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { repositoryDto, repositoryThumbnailDto } from 'src/dto/github.dto';
+import {
+  reportLogDto,
+  repositoryDto,
+  repositoryThumbnailDto,
+} from 'src/dto/github.dto';
 import { Repository } from 'src/entities/repository.entity';
 import { GithubService } from './github.service';
 
@@ -39,7 +43,8 @@ export class GithubController {
   @Post('repository')
   @ApiOperation({
     summary: '유저 Repository 선택 반영 API',
-    description: '유저의 Repository 선택을 반영한다.',
+    description:
+      '유저의 Repository 선택을 반영한다.\n이번 달에, 분석 기록이 없다면 내부적으로 분석 실행 준비 상태가 된다.',
   })
   @ApiBody({
     type: repositoryDto,
@@ -56,4 +61,22 @@ export class GithubController {
   ): Promise<Repository[]> {
     return this.githubsService.updateUserRepository(userId, inputRepository);
   }
+
+  @Post('report/manual')
+  @ApiOperation({
+    summary: '요청된 분석 결과 생성 API',
+    description:
+      'report_log에 REQUET 상태인, 직접 분석 요청된 건에 대해 분석을 실행한다.\n해당 권한에 대한 토큰이 필요하다.(토큰 아직 미적용)',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async createManualReport(
+    @Req() { user: { userId } },
+  ): // ): Promise<reportLogDto[]> {
+  Promise<any[]> {
+    return this.githubsService.createManualReport();
+  }
+
+  // async getMonthlyReport(@Req() {user:{userId}}){
+  //   return {reportStatus:enum,data:{}}
+  // }
 }

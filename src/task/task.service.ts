@@ -46,7 +46,7 @@ export class TaskService {
     priority,
   }: {
     userId: string;
-    priority: string;
+    priority: number;
   }): Promise<wishTaskOptionDto[]> {
     const taskData = await this.tasksRepository.find({
       where: { isDuplicate: false },
@@ -68,13 +68,13 @@ export class TaskService {
     priority,
   }: {
     userId: string;
-    priority: number | string;
+    priority: number;
   }): Promise<string> | null {
     try {
       const {
         task: { id: taskId },
       } = await this.wishTasksRepository.findOne({
-        where: { user: { id: userId }, priority: +priority },
+        where: { user: { id: userId }, priority },
       });
       return taskId;
     } catch {
@@ -87,7 +87,7 @@ export class TaskService {
     wishTask,
     userId,
   }: {
-    wishTask: { id: string; priority: string }[];
+    wishTask: { id: string; priority: number }[];
     userId: string;
   }) {
     //   기존의 관심 직무 삭제

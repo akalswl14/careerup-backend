@@ -114,7 +114,7 @@ export class recruitDetailDto {
 
   @IsDate()
   @ApiProperty({ description: '공고 마감일.', required: true, nullable: true })
-  dueDate: Date;
+  dueDate: Date | null;
 
   @IsNumber()
   @ApiProperty({

@@ -25,5 +25,5 @@ export class userProfileDto {
     nullable: true,
     required: true,
   })
-  email: string;
+  email: string | null;
 }

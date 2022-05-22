@@ -336,4 +336,20 @@ export class TestdataService {
       return null;
     }
   }
+
+  async putExtraTrendStackData(testData: any): Promise<Boolean> {
+    const insertData = [];
+    for (const { taskId, techstackId, num } of testData) {
+      insertData.push(
+        this.trendStacksRepository.create({
+          task: { id: taskId },
+          techstack: { id: techstackId },
+          priority: num,
+        }),
+      );
+    }
+    const result = await this.trendStacksRepository.insert(insertData);
+    if (!result) return false;
+    return true;
+  }
 }

@@ -152,4 +152,21 @@ export class TestdataController {
   async putTrendStackData(@Body() inputData: any): Promise<Boolean> {
     return this.testDataService.putTrendStackData(inputData);
   }
+
+  @Post('extratrendstack')
+  @ApiOperation({
+    summary: 'TrendStack 추가 매뉴얼 데이터 삽입 API',
+    description: '매뉴얼적으로 추가한 TrendStack 데이터를 삽입함',
+  })
+  @ApiBody({
+    type: 'json',
+    description: 'Task 별 연관 Stack 추가 데이터',
+  })
+  @ApiOkResponse({
+    description: '성공일 경우 True, 실패일 경우 False',
+    type: Boolean,
+  })
+  async putExtraTrendStackData(@Body() inputData: any): Promise<Boolean> {
+    return this.testDataService.putExtraTrendStackData(inputData);
+  }
 }

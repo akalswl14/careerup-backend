@@ -9,6 +9,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import {
+  monthlyReportThumbnail,
   reportLogDto,
   repositoryDto,
   repositoryThumbnailDto,
@@ -71,12 +72,24 @@ export class GithubController {
   @UseGuards(AuthGuard('jwt'))
   async createManualReport(
     @Req() { user: { userId } },
-  ): // ): Promise<reportLogDto[]> {
-  Promise<any[]> {
+  ): Promise<reportLogDto[]> {
     return this.githubsService.createManualReport();
   }
 
-  // async getMonthlyReport(@Req() {user:{userId}}){
-  //   return {reportStatus:enum,data:{}}
-  // }
+  @Get('report')
+  @ApiOperation({
+    summary: '유저 monthly report 반환 API',
+    description: 'github repository 분석 결과 페이지의 분석 결과를 반환함.',
+  })
+  @ApiOkResponse({
+    description: '현재 분석 상태와, 해당하는 분석 결과값을 반환함.',
+    type: monthlyReportThumbnail,
+    isArray: false,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async getMonthlyReport(
+    @Req() { user: { userId } },
+  ): Promise<monthlyReportThumbnail> {
+    return this.githubsService.getMonthlyReport(userId);
+  }
 }

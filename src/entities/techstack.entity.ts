@@ -9,16 +9,18 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Language } from './language.entity';
+import { StackToLanguage } from './stack-to-language.entity';
 import { TrendStack } from './trend-stack.entity';
 
 @Entity('techstack')
 export class Techstack {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
-
-  @ManyToMany(() => Language)
-  @JoinTable()
-  languages: Language[];
+  @OneToMany(
+    () => StackToLanguage,
+    (stackToLanguage) => stackToLanguage.techstack,
+  )
+  stackToLanguages: StackToLanguage[];
 
   @OneToMany(() => TrendStack, (trendStack) => trendStack.techstack)
   trendStacks: TrendStack[];

@@ -1,8 +1,10 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { MoreThanOrEqual, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as UserRepository from 'src/entities/repository.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
+  languageToTaskDto,
+  monthlyReportThumbnail,
   reportLogDto,
   repositoryDto,
   repositoryThumbnailDto,
@@ -15,6 +17,10 @@ import { ReportLog } from 'src/entities/report-log.entity';
 import { ProcessStatus } from 'src/entities/enum';
 import { MonthlyReport } from 'src/entities/monthly-report.entity';
 import { OauthInfo } from 'src/entities/oauth-info.entity';
+import { WishTask } from 'src/entities/wish-task.entity';
+import { Language } from 'src/entities/language.entity';
+import { StackToLanguage } from 'src/entities/stack-to-language.entity';
+import { Memoir } from 'src/entities/memoir.entity';
 
 @Injectable()
 export class GithubService {
@@ -27,44 +33,63 @@ export class GithubService {
     private readonly reportLogsRepository: Repository<ReportLog>,
     @InjectRepository(MonthlyReport)
     private readonly monthlyReportsRepository: Repository<MonthlyReport>,
+    @InjectRepository(OauthInfo)
+    private readonly oauthInfosRepository: Repository<OauthInfo>,
+    @InjectRepository(WishTask)
+    private readonly wishTasksRepository: Repository<WishTask>,
+    @InjectRepository(Language)
+    private readonly languagesRepostiory: Repository<Language>,
+    @InjectRepository(StackToLanguage)
+    private readonly stackToLanguagesRepostiory: Repository<StackToLanguage>,
+    @InjectRepository(Memoir)
+    private readonly memoirsRepository: Repository<Memoir>,
     private httpService: HttpService,
   ) {}
 
-  async getGitRepository(username: string) {
+  async getGitRepository(gitAccessToken: string) {
     const responseData = await lastValueFrom(
-      this.httpService.get(`https://api.github.com/users/${username}/repos`, {
+      this.httpService.get(`https://api.github.com/user/repos`, {
         method: 'GET',
-        headers: { accept: 'application/vnd.github.v3+json' },
+        headers: {
+          accept: 'application/vnd.github.v3+json',
+          Authorization: `token ${gitAccessToken}`,
+        },
         params: { sort: 'updated', direction: 'desc', per_page: 10, page: 1 },
       }),
     );
-    // if(!responseData || !responseData.data) throw new NotFoundException('Repository 정보를 가져올 수 없습니다.')
+    if (!responseData || !responseData.data)
+      throw new NotFoundException('Repository 정보를 가져올 수 없습니다.');
     return responseData.data;
   }
 
   async getUserRepository(userId: string): Promise<repositoryThumbnailDto[]> {
     const rtnRepositories: repositoryThumbnailDto[] = [];
-    const userRepoGitIds: string[] = [];
+    const userRepoGitIds: number[] = [];
 
     const userInfo = await this.usersRepository.findOne(userId);
-    if (!userInfo) throw new NotFoundException('조회할 수 없는 유저 입니다.');
+    const userOauthInfo = await this.oauthInfosRepository.findOne({
+      user: { id: userId },
+    });
+    if (!userInfo || !userOauthInfo)
+      throw new NotFoundException('조회할 수 없는 유저 입니다.');
     const { username } = userInfo;
+    const { accessToken } = userOauthInfo;
     const selectedUserRepos = await this.userRepoRepository.find({
       where: { user: { id: userId } },
       order: { id: 'ASC' },
     });
     for (const { gitRepoId, repoName } of selectedUserRepos) {
-      userRepoGitIds.push(gitRepoId);
-      const html_url = `${username}/${repoName}`;
+      userRepoGitIds.push(Number(gitRepoId));
+      const html_url = `https://github.com/${username}/${repoName}`;
       rtnRepositories.push({
-        gitRepoId,
+        gitRepoId: Number(gitRepoId),
         repoName,
         html_url,
         isSelect: true,
       });
     }
 
-    const gitRepoResult = await this.getGitRepository(username);
+    const gitRepoResult = await this.getGitRepository(accessToken);
 
     for (const { id, full_name, html_url } of gitRepoResult) {
       if (userRepoGitIds.includes(id)) continue;
@@ -86,7 +111,7 @@ export class GithubService {
 
     const newRepoEntities = data.map(({ gitRepoId, repoName }) =>
       this.userRepoRepository.create({
-        gitRepoId,
+        gitRepoId: gitRepoId.toString(),
         repoName,
         user: { id: userId },
       }),
@@ -143,15 +168,6 @@ export class GithubService {
         .innerJoin(OauthInfo, 'oauthInfo', 'oauthInfo.userId = user.id')
         .getRawMany();
 
-    const sample = [
-      {
-        reportLog_id: '1',
-        user_id: '1',
-        user_username: 'akalswl14',
-        oauthInfo_accessToken: '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',
-      },
-    ];
-
     const rtnLogs: reportLogDto[] = [];
 
     for (const {
@@ -160,105 +176,213 @@ export class GithubService {
       username,
       gitAccessToken,
     } of reportLogResult) {
-      const targetLog = await this.reportLogsRepository.findOne(reportLogId);
-
-      if (!targetLog) {
-        rtnLogs.push({
-          reportId: null,
-          reportLogId,
-          reportStatus: null,
-          repoNames: [],
-          description: '유효하지 않은 report Log 입니다.',
-        });
-        continue;
-      }
-      if (targetLog.reportStatus != ProcessStatus.REQUEST) {
-        rtnLogs.push({
-          reportId: null,
-          reportLogId,
-          reportStatus: null,
-          repoNames: [],
-          description: 'request 상태가 아닌 report Log 입니다.',
-        });
-        continue;
-      }
-
-      // // Report Log를 작업중 상태로 변경
-      // await this.reportLogsRepository.update(
-      //   { id },
-      //   { reportStatus: ProcessStatus.ONPROGRESS },
-      // );
-
-      // 작업 시작
       const repoIds: string[] = [];
-      let commitData: any[] = [];
-      // const monthlyCommitLog // [{date:Date,commitNum:number}]
+      try {
+        const targetLog = await this.reportLogsRepository.findOne(reportLogId);
 
-      // 1. Commit -> 월간 commit log, 월간 총 commit 수, 지난달 대비 commit 수 변화
-
-      // user repository data 가져오기
-      const userRepositoryResult = await this.getUserRepositoryIds(userId);
-
-      Logger.log('USER REPOSITORY 데이터 가져오기');
-      Logger.log(JSON.stringify(userRepositoryResult));
-
-      // 레포별로 조회해, 기간 내 전체 커밋 로그 가져오기 ( default branch 기준 )
-      for (const { gitRepoId, repoName } of userRepositoryResult) {
-        const { status, message, data } = await this.getGitCommitData(
-          username,
-          repoName,
-          gitAccessToken,
-        );
-        if (status != 200) {
-          Logger.log(
-            JSON.stringify({
-              service: 'getGitCommitData',
-              input: { username, repoName, gitAccessToken: 'not in log' },
-              message,
-              datalength: data.length,
-            }),
-          );
+        if (!targetLog) {
+          rtnLogs.push({
+            reportId: null,
+            reportLogId,
+            reportStatus: null,
+            repoIds: [],
+            description: '유효하지 않은 report Log 입니다.',
+          });
+          continue;
         }
-        commitData = [...commitData, ...data];
-        repoIds.push(gitRepoId);
+        if (targetLog.reportStatus != ProcessStatus.REQUEST) {
+          rtnLogs.push({
+            reportId: null,
+            reportLogId,
+            reportStatus: null,
+            repoIds: [],
+            description: 'request 상태가 아닌 report Log 입니다.',
+          });
+          continue;
+        }
+
+        // Report Log를 작업중 상태로 변경
+        await this.reportLogsRepository.update(
+          { id: reportLogId },
+          { reportStatus: ProcessStatus.ONPROGRESS },
+        );
+
+        // 작업 시작
+        let commitData: any[] = [];
+        let starNum = 0;
+        let mostStarRepo: string;
+        let mostStarRepoNum = -1;
+        const languageData: { [languageName: string]: number } = {};
+        // const monthlyCommitLog // [{date:Date,commitNum:number}]
+
+        // 1. Commit -> 월간 commit log, 월간 총 commit 수, 지난달 대비 commit 수 변화
+
+        // user repository data 가져오기
+        const userRepositoryResult = await this.getUserRepositoryIds(userId);
+
+        Logger.log('USER REPOSITORY 데이터 가져오기');
+        Logger.log(JSON.stringify(userRepositoryResult));
+
+        // 레포별로 git 정보 가져오기 ( default branch 기준 )
+        for (const { gitRepoId, repoName } of userRepositoryResult) {
+          // 이 레포의 커밋 로그 가져오기
+          const { status, message, data } = await this.getGitCommitData(
+            username,
+            repoName,
+            gitAccessToken,
+          );
+          if (status != 200) {
+            Logger.log(
+              JSON.stringify({
+                service: 'getGitCommitData',
+                input: { username, repoName, gitAccessToken: 'not in log' },
+                message,
+                datalength: data.length,
+              }),
+            );
+          }
+          commitData = [...commitData, ...data];
+
+          // 이 레포의 Star 수 가져와 총 Star 수에 반영하고, 제일 많은 Star 받은 레포인지 확인
+          const targetStar = await this.getGitStarData(
+            repoName,
+            gitAccessToken,
+          );
+          if (targetStar == null) {
+            rtnLogs.push({
+              reportId: null,
+              reportLogId,
+              reportStatus: ProcessStatus.FAIL,
+              repoIds,
+              description: `${repoName} 레포지터리의 상세 정보를 가져올 수 없습니다.`,
+            });
+            await this.reportLogsRepository.update(
+              { id: reportLogId },
+              { reportStatus: ProcessStatus.FAIL },
+            );
+            continue;
+          }
+          starNum += targetStar;
+          if (mostStarRepoNum < targetStar) {
+            mostStarRepo = repoName;
+            mostStarRepoNum = targetStar;
+          }
+
+          // 이 레포의 language 데이터 가져오기
+          const languageResult = await this.getGitLanguageData(
+            repoName,
+            gitAccessToken,
+          );
+          if (!languageResult) {
+            rtnLogs.push({
+              reportId: null,
+              reportLogId,
+              reportStatus: ProcessStatus.FAIL,
+              repoIds,
+              description: `${repoName} 레포지터리의 언어 정보를 가져올 수 없습니다.`,
+            });
+            await this.reportLogsRepository.update(
+              { id: reportLogId },
+              { reportStatus: ProcessStatus.FAIL },
+            );
+            continue;
+          }
+          const languageKeys = Object.keys(languageResult);
+          for (const targetLanguage of languageKeys) {
+            languageData[targetLanguage] = languageResult[targetLanguage];
+          }
+          repoIds.push(gitRepoId);
+        }
+
+        // 총 commit 수
+        const commitNum = commitData.length;
+
+        // 마지막 분석 대비 commit 수
+        // 마지막 분석 결과 데이터 가져오기
+        const lastMonthlyReport = await this.monthlyReportsRepository.findOne({
+          where: { user: { id: userId } },
+          order: { updatedAt: 'ASC' },
+        });
+        const lastCommitNum = lastMonthlyReport
+          ? lastMonthlyReport.commitNum
+          : 0;
+        const momCommitNum = commitNum - lastCommitNum;
+
+        // 월간 commit log
+        // 지난 달의 commit 기록을 저장하기 위한 리스트 생성 및 데이터 삽입
+        const monthlyCommitLog = this.createMonthlyCommitLogObject();
+        for (const {
+          commit: {
+            committer: { date: commitLogDate },
+          },
+        } of commitData) {
+          const targetDate = new Date(commitLogDate).getDate();
+          let { commitNum } = monthlyCommitLog[targetDate - 1];
+          monthlyCommitLog[targetDate - 1].commitNum = commitNum + 1;
+        }
+
+        // language 데이터 정리
+        const languageDetail = this.sortLanguageObjectbyValue(
+          languageData,
+          false,
+        );
+
+        // stack 분석
+        const stackAnalysisResult = await this.getStackWithLanguage(
+          userId,
+          languageDetail,
+        );
+        const finalResult = {
+          repoIds,
+          commitNum,
+          momCommitNum,
+          commitDetail: JSON.stringify(monthlyCommitLog),
+          starNum,
+          mostStarRepo,
+          languageDetail: JSON.stringify(languageDetail),
+          stackId: stackAnalysisResult?.techstackId,
+          stackName: stackAnalysisResult?.techstackName,
+          stackLanguage: stackAnalysisResult?.languageName,
+          stackTaskId: stackAnalysisResult?.taskId,
+          stackTaskName: stackAnalysisResult?.taskName,
+          user: { id: userId },
+        };
+
+        rtnLogs.push({
+          reportId: null,
+          reportLogId,
+          repoIds,
+          reportStatus: ProcessStatus.SUCCESS,
+          description: null,
+        });
+        const createResult = await this.monthlyReportsRepository.save(
+          this.monthlyReportsRepository.create(finalResult),
+        );
+        Logger.log('CREATE RESULT');
+        Logger.log(JSON.stringify(createResult));
+
+        // Report Log를 성공 상태로 변경
+        await this.reportLogsRepository.update(
+          { id: reportLogId },
+          { reportStatus: ProcessStatus.SUCCESS },
+        );
+        // 테스트용으로 break. 여러 request로 테스트 할때 break 해제하고 해보고, 최종 때 뺼 것
+        break;
+      } catch (e) {
+        rtnLogs.push({
+          reportId: null,
+          reportLogId,
+          repoIds,
+          reportStatus: ProcessStatus.FAIL,
+          description: e,
+        });
+        await this.reportLogsRepository.update(
+          { id: reportLogId },
+          { reportStatus: ProcessStatus.FAIL },
+        );
       }
-
-      // 총 commit 수
-      const commitNum = commitData.length;
-      Logger.log('총 커밋 수');
-      Logger.log(JSON.stringify({ commitNum }));
-
-      // 마지막 분석 대비 commit 수
-      // 마지막 분석 결과 데이터 가져오기
-      const lastMonthlyReport = await this.monthlyReportsRepository.findOne({
-        where: { user: { id: userId } },
-        order: { updatedAt: 'ASC' },
-      });
-      const lastCommitNum = lastMonthlyReport ? lastMonthlyReport.commitNum : 0;
-      const momCommitNum = commitNum - lastCommitNum;
-
-      Logger.log('mom 커밋 수');
-      Logger.log(JSON.stringify({ momCommitNum }));
-
-      // 월간 commit log
-      // 마지막 분석 결과 생성일 가져오기
-      const lastReportDate = lastMonthlyReport?.updatedAt;
-      // 지난 달의 commit 기록을 저장하기 위한 리스트 생성
-      const monthlyCommitLog = this.createMonthlyCommitLogObject();
-      for (const {
-        commit: {
-          committer: { date: commitLogDate },
-        },
-      } of commitData) {
-        const targetDate = new Date(commitLogDate).getDate();
-        monthlyCommitLog[targetDate - 1].commitNum++;
-      }
-      Logger.log('월간 commit log');
-      Logger.log(JSON.stringify({ monthlyCommitLog }));
-      // log 다 0뜸 데이터 하나도 안들어감. 왜?
-      break;
     }
-    return [];
+    return rtnLogs;
   }
 
   // 정기적으로 분석결과 생성 - 매달 1회
@@ -274,6 +398,7 @@ export class GithubService {
     return [];
   }
 
+  // 이 레포의 월간 commit 기록 - 레포의 default 브랜치로만 기준으로 가져옴
   async getGitCommitData(
     username: string,
     repoName: string,
@@ -284,9 +409,6 @@ export class GithubService {
     data: any[] | null;
   }> {
     // ex. repoName = akalwl14/jobup-backend
-    const thisMonthDay1 = new Date(
-      new Date(new Date().setDate(1)).setHours(0, 0, 0, 0),
-    );
 
     const prevMonthFirstDay = new Date();
     prevMonthFirstDay.setDate(0);
@@ -296,7 +418,7 @@ export class GithubService {
     prevMonthLastDay.setDate(0);
     prevMonthLastDay.setHours(0, 0, 0, 0);
 
-    const rtnCommitData = [];
+    let rtnCommitData = [];
     const per_page = 100;
     var page = 1;
 
@@ -316,7 +438,7 @@ export class GithubService {
                 since: prevMonthFirstDay,
                 until: prevMonthLastDay,
                 per_page,
-                page: 1,
+                page,
               },
             },
           ),
@@ -325,12 +447,10 @@ export class GithubService {
           page++;
           continue;
         }
-        rtnCommitData.push(responseData.data);
+        rtnCommitData = [...rtnCommitData, ...responseData.data];
         if (responseData.data.length < per_page) break;
         page++;
       } catch (e) {
-        // "config","request","response","isAxiosError","toJSON"
-        // Logger.log(JSON.stringify(e.toJSON().status));
         return {
           status: e.toJSON().status,
           message: e.toJSON().message,
@@ -338,18 +458,24 @@ export class GithubService {
         };
       }
     }
-    // 이 레포의 월간 commit 기록 - 레포의 default 브랜치로만 기준으로 가져옴
-    // https://api.github.com/repos/akalswl14/jobup-backend/commits
-
+    Logger.log('COMMIT 데이터 가져오기');
+    Logger.log(`Repo Name : ${repoName}`);
+    Logger.log(JSON.stringify(rtnCommitData[0]));
     return { status: 200, message: null, data: rtnCommitData };
   }
 
-  async getGitStarData(repoName: string): Promise<number | null> {
+  async getGitStarData(
+    repoName: string,
+    gitAccessToken: string,
+  ): Promise<number | null> {
     // ex. repoName = akalwl14/jobup-backend
     const responseData = await lastValueFrom(
       this.httpService.get(`https://api.github.com/repos/${repoName}`, {
         method: 'GET',
-        headers: { accept: 'application/vnd.github.v3+json' },
+        headers: {
+          accept: 'application/vnd.github.v3+json',
+          Authorization: `token ${gitAccessToken}`,
+        },
       }),
     );
     if (!responseData || !responseData.data) return null;
@@ -361,28 +487,33 @@ export class GithubService {
     userId: string,
   ): Promise<{ gitRepoId: string; repoName: string }[]> {
     const repoData = await this.userRepoRepository.find({
-      where: { id: userId },
+      where: { user: { id: userId } },
       order: { createdAt: 'ASC' },
     });
     return repoData.map(({ gitRepoId, repoName }) => ({ gitRepoId, repoName }));
   }
-  // async getGitLanguageData1(repoName: string):Promise<{gitRepoId:string,repoName:string, stargazers_count:number}|null> {
-  // ex. repoName = akalwl14/jobup-backend
-  // const responseData = await lastValueFrom(
-  //   this.httpService.get(`https://api.github.com/repos/${repoName}`, {
-  //     method: 'GET',
-  //     headers: { accept: 'application/vnd.github.v3+json' },
-  //   }),
-  // );
-  // // 이 레포의 월간 commit 기록
-  // // https://api.github.com/repos/akalswl14/jobup-backend/commits
-  // // 이 레포의 총 star 수 : stargazers_count
-  // // 이 레포의 language 분포
-  // // https://api.github.com/repos/akalswl14/jobup-backend/languages
-  // if (!responseData || !responseData.data) return null;
-  // const { id: gitRepoId } = responseData.data;
-  // return { gitRepoId, repoName, stargazers_count };
-  // }
+
+  async getGitLanguageData(
+    repoName: string,
+    gitAccessToken: string,
+  ): Promise<any[] | null> {
+    // ex. repoName = akalwl14/jobup-backend
+    const responseData = await lastValueFrom(
+      this.httpService.get(
+        `https://api.github.com/repos/${repoName}/languages`,
+        {
+          method: 'GET',
+          headers: {
+            accept: 'application/vnd.github.v3+json',
+            Authorization: `token ${gitAccessToken}`,
+          },
+        },
+      ),
+    );
+    if (!responseData || !responseData.data) return null;
+
+    return responseData.data;
+  }
 
   createMonthlyCommitLogObject(): { commitDate: Date; commitNum: number }[] {
     var prevMonthLastDay = new Date(new Date().setDate(0));
@@ -396,5 +527,144 @@ export class GithubService {
       });
     }
     return rtnObject;
+  }
+
+  async createCommitReportData() {
+    // getGitLanguageData
+    return {};
+  }
+
+  sortLanguageObjectbyValue(
+    languageObj = {},
+    asc = false,
+  ): { [languageName: string]: number } {
+    const rtn = {};
+    Object.keys(languageObj)
+      .sort((a, b) => languageObj[asc ? a : b] - languageObj[asc ? b : a])
+      .forEach((s) => (rtn[s] = languageObj[s]));
+    return rtn;
+  }
+
+  async getStackWithLanguage(
+    userId: string,
+    languageDetail: object,
+  ): Promise<languageToTaskDto | null> {
+    const { idOrderQuery, languageIds } = await this.getQueryAndIdWithLanguage(
+      languageDetail,
+    );
+
+    const wishTasks = await this.wishTasksRepository.find({
+      where: { user: { id: userId } },
+      order: { priority: 'ASC' },
+      relations: ['task'],
+    });
+
+    for (const {
+      taskId: wishTaskId,
+      task: { taskName: wishTaskName },
+    } of wishTasks) {
+      const stackResult = await this.stackToLanguagesRepostiory
+        .createQueryBuilder('stackToLang')
+        .select('techstack.id', 'techstackId')
+        .addSelect('techstack.stackName', 'techstackName')
+        .addSelect('language.id', 'languageId')
+        .addSelect('language.languageName', 'languageName')
+        .innerJoin('stackToLang.language', 'language')
+        .innerJoin('stackToLang.techstack', 'techstack')
+        .where('stackToLang.languageId IN (:...languageIds)', { languageIds })
+        .andWhere((qb) => {
+          const subQuery = qb
+            .subQuery()
+            .select('techstack.id', 'techstackId')
+            .from('trend_stack', 'trendStack')
+            .innerJoin('trendStack.task', 'task')
+            .innerJoin('trendStack.techstack', 'techstack')
+            .where('trendStack.taskId = :wishTaskId')
+            .getQuery();
+          return 'stackToLang.techstackId IN ' + subQuery;
+        })
+        .setParameter('wishTaskId', wishTaskId)
+        .orderBy(idOrderQuery)
+        .addOrderBy('techstack.stackName', 'ASC')
+        .getRawMany();
+
+      if (stackResult && stackResult.length > 0) {
+        return {
+          taskId: wishTaskId,
+          taskName: wishTaskName,
+          techstackId: stackResult[0].techstackId,
+          techstackName: stackResult[0].techstackName,
+          languageName: stackResult[0].languageName,
+          languageId: stackResult[0].languageId,
+        };
+      }
+    }
+    return null;
+  }
+
+  async getQueryAndIdWithLanguage(
+    languageDetail: Object,
+  ): Promise<{ idOrderQuery: string; languageIds: string[] }> {
+    const languages = Object.keys(languageDetail);
+    const languageIds: string[] = [];
+
+    var idOrderQuery = 'CASE "language"."id"';
+    for (let index = 0; index < languages.length; index++) {
+      const languageIdResult = await this.languagesRepostiory.findOne({
+        where: { languageName: languages[index] },
+        select: ['id'],
+      });
+      if (languageIdResult) {
+        languageIds.push(languageIdResult.id);
+        idOrderQuery += ` WHEN ${languageIdResult.id} THEN ${index + 1}`;
+      }
+    }
+    idOrderQuery += ' END';
+
+    /* idOrderQuery EXAMPLE :
+     CASE "language"."id" WHEN 605 THEN 1 WHEN 799 THEN 2 WHEN 607 THEN 3 END
+     */
+    return {
+      idOrderQuery,
+      languageIds,
+    };
+  }
+
+  async getMonthlyReport(userId: string): Promise<monthlyReportThumbnail> {
+    const reportResult = await this.monthlyReportsRepository.findOne({
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+    });
+    if (!reportResult) {
+      const reportLogResult = await this.reportLogsRepository.findOne({
+        where: { user: { id: userId } },
+        order: { createdAt: 'DESC' },
+      });
+      return {
+        status: reportLogResult
+          ? reportLogResult.reportStatus
+          : ProcessStatus.FAIL,
+        contents: null,
+        memoir: null,
+      };
+    }
+    delete reportResult['user'];
+    delete reportResult['repoIds'];
+    delete reportResult['updatedAt'];
+    const memoirResult = await this.memoirsRepository.findOne({
+      where: { monthlyReport: { id: reportResult.id } },
+      order: { createdAt: 'DESC' },
+    });
+    return {
+      status: null,
+      contents: reportResult,
+      memoir: memoirResult
+        ? {
+            id: memoirResult.id,
+            description: memoirResult.description,
+            updatedAt: memoirResult.updatedAt,
+          }
+        : null,
+    };
   }
 }

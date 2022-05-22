@@ -89,21 +89,17 @@ export class RecruitService {
       where: { user: { id: userId }, recruit: { id: recruitId } },
     });
     if (wishCnt > 0) {
-      await getConnection()
-        .createQueryBuilder()
+      await this.wishRecruitsRepository
+        .createQueryBuilder('wishRecruit')
         .delete()
-        .from(WishRecruit)
-        .where('userId = :userId AND recruitId = :recruitId', {
-          userId,
-          recruitId,
-        })
+        .where('userId = :userId', { userId })
+        .andWhere('recruitId = :recruitId', { recruitId })
         .execute();
       return false;
     } else {
-      await getConnection()
-        .createQueryBuilder()
+      await this.wishRecruitsRepository
+        .createQueryBuilder('wishRecruit')
         .insert()
-        .into(WishRecruit)
         .values({ user: { id: userId }, recruit: { id: recruitId } })
         .execute();
       return true;

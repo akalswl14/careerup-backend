@@ -17,6 +17,7 @@ import { Portfolio } from './porfolio.entity';
 import { MonthlyReport } from './monthly-report.entity';
 import { WishRecruit } from './wish-recruit.entity';
 import { WishTask } from './wish-task.entity';
+import { Memoir } from './memoir.entity';
 
 @Entity('user')
 export class User {
@@ -70,6 +71,9 @@ export class User {
 
   @OneToMany(() => MonthlyReport, (monthlyReport) => monthlyReport.user)
   monthlyReports: MonthlyReport[];
+
+  @OneToMany(() => Memoir, (memoir) => memoir.user)
+  memoirs: Memoir[];
 
   @OneToMany(() => WishRecruit, (wishRecruit) => wishRecruit.user)
   wishRecruits: WishRecruit[];

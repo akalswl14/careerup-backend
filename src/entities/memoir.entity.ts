@@ -6,8 +6,10 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToOne,
+  ManyToOne,
 } from 'typeorm';
 import { MonthlyReport } from './monthly-report.entity';
+import { User } from './user.entity';
 
 @Entity('memoir')
 export class Memoir {
@@ -17,6 +19,9 @@ export class Memoir {
   @OneToOne(() => MonthlyReport, { nullable: true })
   @JoinColumn()
   monthlyReport: MonthlyReport;
+
+  @ManyToOne(() => User, (user) => user.memoirs, { nullable: false })
+  user: User;
 
   @Column({ type: 'text', nullable: true })
   description: string;

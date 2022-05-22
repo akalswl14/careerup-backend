@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   TestLanguageDto,
@@ -13,6 +13,7 @@ import {
 } from 'src/dto/testdata.dto';
 import { Language } from 'src/entities/language.entity';
 import { Recruit } from 'src/entities/recruit.entity';
+import { StackToLanguage } from 'src/entities/stack-to-language.entity';
 import { Task } from 'src/entities/task.entity';
 import { Techstack } from 'src/entities/techstack.entity';
 import { TrendStack } from 'src/entities/trend-stack.entity';
@@ -31,6 +32,8 @@ export class TestdataService {
     private readonly languagesRepository: Repository<Language>,
     @InjectRepository(TrendStack)
     private readonly trendStacksRepository: Repository<TrendStack>,
+    @InjectRepository(StackToLanguage)
+    private readonly stackToLanguagesRepository: Repository<StackToLanguage>,
   ) {}
 
   async putRecruitData(testData: TestRecruitInputDto[]): Promise<Boolean> {
@@ -149,6 +152,7 @@ export class TestdataService {
   async putStackToLanguageData(
     testData: TestStackToLanguageInputDto[],
   ): Promise<Boolean> {
+    const targetSaveData: StackToLanguage[] = [];
     for (const {
       stack: stackName,
       language_id1,
@@ -157,54 +161,82 @@ export class TestdataService {
       language_id4,
       language_id5,
     } of testData) {
-      const languageInfo: Language[] = [];
+      const stackInfo = await this.techstacksRepository.findOne({
+        where: { stackName },
+        select: ['id'],
+      });
+      if (!stackInfo) {
+        Logger.log('NOT FOUND STACK');
+        Logger.log(stackName);
+      }
+      const { id: techstackId } = stackInfo;
       if (language_id1 !== '') {
         const targetLanguageData = await this.languagesRepository.findOne({
-          id: language_id1,
+          languageCode: language_id1,
         });
-        if (targetLanguageData) languageInfo.push(targetLanguageData);
+        if (targetLanguageData) {
+          targetSaveData.push(
+            this.stackToLanguagesRepository.create({
+              techstack: { id: techstackId },
+              language: { id: targetLanguageData.id },
+            }),
+          );
+        }
       }
       if (language_id2 !== '') {
         const targetLanguageData = await this.languagesRepository.findOne({
-          id: language_id2,
+          languageCode: language_id2,
         });
-        if (targetLanguageData) languageInfo.push(targetLanguageData);
+        if (targetLanguageData) {
+          targetSaveData.push(
+            this.stackToLanguagesRepository.create({
+              techstack: { id: techstackId },
+              language: { id: targetLanguageData.id },
+            }),
+          );
+        }
       }
       if (language_id3 !== '') {
         const targetLanguageData = await this.languagesRepository.findOne({
-          id: language_id3,
+          languageCode: language_id3,
         });
-        if (targetLanguageData) languageInfo.push(targetLanguageData);
+        if (targetLanguageData) {
+          targetSaveData.push(
+            this.stackToLanguagesRepository.create({
+              techstack: { id: techstackId },
+              language: { id: targetLanguageData.id },
+            }),
+          );
+        }
       }
       if (language_id4 !== '') {
         const targetLanguageData = await this.languagesRepository.findOne({
           id: language_id4,
         });
-        if (targetLanguageData) languageInfo.push(targetLanguageData);
+        if (targetLanguageData) {
+          targetSaveData.push(
+            this.stackToLanguagesRepository.create({
+              techstack: { id: techstackId },
+              language: { id: targetLanguageData.id },
+            }),
+          );
+        }
       }
       if (language_id5 !== '') {
         const targetLanguageData = await this.languagesRepository.findOne({
-          id: language_id5,
+          languageCode: language_id5,
         });
-        if (targetLanguageData) languageInfo.push(targetLanguageData);
-      }
-
-      const stackInfo = await this.techstacksRepository.find({
-        where: { stackName },
-        select: ['id'],
-      });
-      for (const targetStack of stackInfo) {
-        var languages: Language[] = [...languageInfo];
-        if (targetStack.languages)
-          languages = [...languages, ...targetStack.languages];
-        await this.techstacksRepository.save([
-          {
-            ...targetStack,
-            languages,
-          },
-        ]);
+        if (targetLanguageData) {
+          targetSaveData.push(
+            this.stackToLanguagesRepository.create({
+              techstack: { id: techstackId },
+              language: { id: targetLanguageData.id },
+            }),
+          );
+        }
       }
     }
+    await this.stackToLanguagesRepository.save(targetSaveData);
     return true;
   }
 

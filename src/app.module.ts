@@ -12,6 +12,7 @@ import { config } from 'ormconfig';
 import { TechstackModule } from './techstack/techstack.module';
 import { TaskModule } from './task/task.module';
 import { GithubModule } from './github/github.module';
+import { MemoirModule } from './memoir/memoir.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { GithubModule } from './github/github.module';
     TechstackModule,
     TaskModule,
     GithubModule,
+    MemoirModule,
   ],
   controllers: [AppController],
   providers: [AppService],

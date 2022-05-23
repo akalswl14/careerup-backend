@@ -160,3 +160,34 @@ export class recruitIdDto {
   @ApiProperty({ description: '공고 ID' })
   id: string;
 }
+
+@Entity()
+export class wishRecruitThumbnailDto {
+  @IsNumberString()
+  @ApiProperty({ description: '공고 ID' })
+  id: string;
+
+  @IsString()
+  @ApiProperty({ description: '공고 제목' })
+  title: string;
+
+  @IsString()
+  @ApiProperty({ description: '공고 회사명' })
+  companyName: string;
+
+  @IsString()
+  @ApiProperty({ description: '공고내 요구 조건. 예 ) 경력 2년↑' })
+  career: string;
+
+  @IsString()
+  @ApiProperty({ description: '공고내 요구 학력. 예 ) 학력무관' })
+  school: string;
+
+  @IsBoolean()
+  @ApiProperty({ description: '사용자의 찜 여부' })
+  isWish: boolean;
+
+  @IsBoolean()
+  @ApiProperty({ description: '공고의 마감 여부' })
+  isEnd: boolean;
+}

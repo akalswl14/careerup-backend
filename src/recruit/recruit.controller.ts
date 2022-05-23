@@ -90,6 +90,63 @@ export class RecruitController {
     return this.recruitService.toggleWishRecruit(recruitId, userId);
   }
 
+  @Get('wish')
+  @ApiOperation({
+    summary: '개별 공고 찜 여부 API',
+    description: '하나의 공고에 대해 찜 상태를 반환함.',
+  })
+  @ApiQuery({
+    name: 'id',
+    type: 'number',
+    isArray: false,
+    required: true,
+    description: '찜 확인할 공고 ID',
+  })
+  @ApiOkResponse({
+    description: '찜 등록된 상태시 true, 해제된 상태시 false를 반환함.',
+    type: 'boolean',
+    isArray: false,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async getRecruitWish(
+    @Req() { user: { userId } },
+    @Query() { id: recruitId }: { id: string },
+  ): Promise<Boolean> {
+    return this.recruitService.getRecruitWish(recruitId, userId);
+  }
+
+  @Get('wishlist')
+  @ApiOperation({
+    summary: '찜한 공고 리스트 API',
+    description: '유저가 찜한 공고의 리스트를 반환함',
+  })
+  @ApiQuery({
+    name: 'take',
+    type: 'number',
+    isArray: false,
+    required: false,
+    description: '페이지네이션을 위한 take 값. Default = 10',
+  })
+  @ApiQuery({
+    name: 'page',
+    type: 'number',
+    isArray: false,
+    required: false,
+    description: '페이지네이션을 위한 page 값. Default = 1',
+  })
+  @ApiOkResponse({
+    description: '찜 등록된 상태시 true, 해제된 상태시 false를 반환함.',
+    type: 'boolean',
+    isArray: false,
+  })
+  @UseGuards(AuthGuard('jwt'))
+  async getRecruitWishList(
+    @Req() { user: { userId } },
+    @Query() { take = 10, page = 1 }: PaginationOption,
+  ): Promise<Pagination<recruitThumbnailDto>> {
+    return this.recruitService.getRecruitWishList({ take, page }, userId);
+  }
+
   @Get('recommend')
   @ApiOperation({
     summary: '분석 결과 추천 공고 API',

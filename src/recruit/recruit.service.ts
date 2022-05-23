@@ -9,6 +9,7 @@ import {
   recruitThumbnailDto,
   searchRecruitQueryDto,
   tagThumbnailDto,
+  wishRecruitThumbnailDto,
 } from 'src/dto/recruit.dto';
 import { Recruit } from 'src/entities/recruit.entity';
 import { TrendStack } from 'src/entities/trend-stack.entity';
@@ -104,6 +105,43 @@ export class RecruitService {
         .execute();
       return true;
     }
+  }
+
+  async getRecruitWish(recruitId: string, userId: string): Promise<Boolean> {
+    const wishCnt = await this.wishRecruitsRepository.count({
+      where: { user: { id: userId }, recruit: { id: recruitId } },
+    });
+    return wishCnt > 0 ? true : false;
+  }
+
+  async getRecruitWishList(
+    { take, page }: PaginationOption,
+    userId: string,
+  ): Promise<Pagination<wishRecruitThumbnailDto>> {
+    const [recruitData, totalRecruitNum] = await this.recruitsRepository
+      .createQueryBuilder('recruit')
+      .where('wishRecruit.userId =:userId', { userId })
+      .innerJoinAndSelect(
+        WishRecruit,
+        'wishRecruit',
+        'wishRecruit.recruitId = recruit.id',
+      )
+      .take(take)
+      .skip(take * (page - 1))
+      .orderBy({
+        'recruit.dueDate': { order: 'ASC', nulls: 'NULLS LAST' },
+        'recruit.id': 'DESC',
+        'recruit.createdAt': 'DESC',
+      })
+      .getManyAndCount();
+
+    const rtnRecruits: wishRecruitThumbnailDto[] =
+      await this.formatWishRecruitThumbnail(recruitData);
+
+    return new Pagination<wishRecruitThumbnailDto>({
+      total: totalRecruitNum,
+      results: rtnRecruits,
+    });
   }
 
   async getRecommendRecruits(userId: string): Promise<recruitThumbnailDto[]> {
@@ -351,6 +389,37 @@ export class RecruitService {
         career,
         school,
         isWish: cntWishRecruits > 0 ? true : false,
+      });
+      if (limitNum && rtnRecruits.length == limitNum) break;
+    }
+    return rtnRecruits;
+  }
+
+  async formatWishRecruitThumbnail(
+    targetRecruits: Recruit[],
+    limitNum?: number,
+  ): Promise<wishRecruitThumbnailDto[]> {
+    const nowDate = new Date(
+      new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }),
+    );
+    const rtnRecruits: wishRecruitThumbnailDto[] = [];
+
+    for (const {
+      id,
+      recruitTitle: title,
+      companyName,
+      recruitCareer: career,
+      recruitSchool: school,
+      dueDate,
+    } of targetRecruits) {
+      rtnRecruits.push({
+        id,
+        title,
+        companyName,
+        career,
+        school,
+        isWish: true,
+        isEnd: dueDate >= nowDate || dueDate == null ? false : true,
       });
       if (limitNum && rtnRecruits.length == limitNum) break;
     }

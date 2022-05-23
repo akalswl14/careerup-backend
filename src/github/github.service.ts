@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { LessThan, MoreThanOrEqual, Repository } from 'typeorm';
 import * as UserRepository from 'src/entities/repository.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
@@ -144,29 +144,10 @@ export class GithubService {
   // manual하게 분석결과 생성 - 10분 마다
   // 한사람 분석 시간 잴 것
   // 돌아가는 시간 보고, reportLog 처리할 제한 개수 설정하기
-  // async createManualReport(): Promise<reportLogDto[]> {
-  async createManualReport(): Promise<any[]> {
-    const thisMonthFirstDay = new Date(
-      new Date(new Date().setDate(1)).setHours(0, 0, 0, 0),
-    );
-
+  async createManualReport(): Promise<reportLogDto[]> {
     // 이번달에 REQUEST 상태인 reportlog에 대해 분석할 것이므로, 해당하는 reportlog를 가져옴.
-    const reportLogResult: requestRepoInputDto[] =
-      await this.reportLogsRepository
-        .createQueryBuilder('reportLog')
-        .select('reportLog.id', 'reportLogId')
-        .addSelect('user.id', 'userId')
-        .addSelect('user.username', 'username')
-        .addSelect('oauthInfo.accessToken', 'gitAccessToken')
-        .where('reportLog.reportStatus =:statusValue', {
-          statusValue: ProcessStatus.REQUEST,
-        })
-        .andWhere('reportLog.updatedAt >= :thisMonthFirstDay', {
-          thisMonthFirstDay,
-        })
-        .innerJoin(User, 'user', 'reportLog.user = user.id')
-        .innerJoin(OauthInfo, 'oauthInfo', 'oauthInfo.userId = user.id')
-        .getRawMany();
+    const requestReportLogs: requestRepoInputDto[] =
+      await this.getRequestReportLog();
 
     const rtnLogs: reportLogDto[] = [];
 
@@ -175,7 +156,7 @@ export class GithubService {
       userId,
       username,
       gitAccessToken,
-    } of reportLogResult) {
+    } of requestReportLogs) {
       const repoIds: string[] = [];
       try {
         const targetLog = await this.reportLogsRepository.findOne(reportLogId);
@@ -213,15 +194,10 @@ export class GithubService {
         let mostStarRepo: string;
         let mostStarRepoNum = -1;
         const languageData: { [languageName: string]: number } = {};
-        // const monthlyCommitLog // [{date:Date,commitNum:number}]
 
         // 1. Commit -> 월간 commit log, 월간 총 commit 수, 지난달 대비 commit 수 변화
-
         // user repository data 가져오기
         const userRepositoryResult = await this.getUserRepositoryIds(userId);
-
-        Logger.log('USER REPOSITORY 데이터 가져오기');
-        Logger.log(JSON.stringify(userRepositoryResult));
 
         // 레포별로 git 정보 가져오기 ( default branch 기준 )
         for (const { gitRepoId, repoName } of userRepositoryResult) {
@@ -298,28 +274,10 @@ export class GithubService {
         const commitNum = commitData.length;
 
         // 마지막 분석 대비 commit 수
-        // 마지막 분석 결과 데이터 가져오기
-        const lastMonthlyReport = await this.monthlyReportsRepository.findOne({
-          where: { user: { id: userId } },
-          order: { updatedAt: 'ASC' },
-        });
-        const lastCommitNum = lastMonthlyReport
-          ? lastMonthlyReport.commitNum
-          : 0;
-        const momCommitNum = commitNum - lastCommitNum;
+        const momCommitNum = await this.getMomCommitNum(userId, commitNum);
 
         // 월간 commit log
-        // 지난 달의 commit 기록을 저장하기 위한 리스트 생성 및 데이터 삽입
-        const monthlyCommitLog = this.createMonthlyCommitLogObject();
-        for (const {
-          commit: {
-            committer: { date: commitLogDate },
-          },
-        } of commitData) {
-          const targetDate = new Date(commitLogDate).getDate();
-          let { commitNum } = monthlyCommitLog[targetDate - 1];
-          monthlyCommitLog[targetDate - 1].commitNum = commitNum + 1;
-        }
+        const monthlyCommitLog = await this.getMonthlyCommitLog(commitData);
 
         // language 데이터 정리
         const languageDetail = this.sortLanguageObjectbyValue(
@@ -332,22 +290,24 @@ export class GithubService {
           userId,
           languageDetail,
         );
-        const finalResult = {
-          repoIds,
-          commitNum,
-          momCommitNum,
-          commitDetail: JSON.stringify(monthlyCommitLog),
-          starNum,
-          mostStarRepo,
-          languageDetail: JSON.stringify(languageDetail),
-          stackId: stackAnalysisResult?.techstackId,
-          stackName: stackAnalysisResult?.techstackName,
-          stackLanguage: stackAnalysisResult?.languageName,
-          stackTaskId: stackAnalysisResult?.taskId,
-          stackTaskName: stackAnalysisResult?.taskName,
-          user: { id: userId },
-        };
 
+        await this.monthlyReportsRepository.save(
+          this.monthlyReportsRepository.create({
+            repoIds,
+            commitNum,
+            momCommitNum,
+            commitDetail: monthlyCommitLog,
+            starNum,
+            mostStarRepo,
+            languageDetail: JSON.stringify(languageDetail),
+            stackId: stackAnalysisResult?.techstackId,
+            stackName: stackAnalysisResult?.techstackName,
+            stackLanguage: stackAnalysisResult?.languageName,
+            stackTaskId: stackAnalysisResult?.taskId,
+            stackTaskName: stackAnalysisResult?.taskName,
+            user: { id: userId },
+          }),
+        );
         rtnLogs.push({
           reportId: null,
           reportLogId,
@@ -355,11 +315,6 @@ export class GithubService {
           reportStatus: ProcessStatus.SUCCESS,
           description: null,
         });
-        const createResult = await this.monthlyReportsRepository.save(
-          this.monthlyReportsRepository.create(finalResult),
-        );
-        Logger.log('CREATE RESULT');
-        Logger.log(JSON.stringify(createResult));
 
         // Report Log를 성공 상태로 변경
         await this.reportLogsRepository.update(
@@ -385,17 +340,87 @@ export class GithubService {
     return rtnLogs;
   }
 
-  // 정기적으로 분석결과 생성 - 매달 1회
-  async createMonthlyReport(): Promise<reportLogDto[]> {
-    // 정기 update - 이번달에 reportlog가 없거나, 있어도 SUCCESS 상태이거나 ONPROGRESS 상태이거나 REQUEST 상태가 아닐 경우.
-    const reportLogResult = await this.reportLogsRepository.find({
-      where: { reportStatus: ProcessStatus.REQUEST, updatedAt: {} },
+  getMonthlyCommitLog(commitData: any[]): number[] {
+    // 지난 달의 commit 기록을 저장하기 위한 리스트 생성 및 데이터 삽입
+    const monthlyCommitLog: number[] = this.createMonthlyCommitLogObject();
+    for (const {
+      commit: {
+        committer: { date: commitLogDate },
+      },
+    } of commitData) {
+      const targetDate = new Date(commitLogDate).getDate();
+      let commitNum = monthlyCommitLog[targetDate - 1];
+      monthlyCommitLog[targetDate - 1] = commitNum + 1;
+    }
+    return monthlyCommitLog;
+  }
+
+  async getMomCommitNum(userId: string, commitNum: number): Promise<number> {
+    const thisMonthFirstDay = new Date(
+      new Date(new Date().setDate(1)).setHours(0, 0, 0, 0),
+    );
+    const lastMonthlyReport = await this.monthlyReportsRepository.findOne({
+      where: { user: { id: userId }, updatedAt: LessThan(thisMonthFirstDay) },
+      order: { updatedAt: 'DESC' },
     });
-    Logger.log(JSON.stringify(reportLogResult));
-    return [];
-    // for (const iterator of object) {
-    // }
-    return [];
+    const lastCommitNum = lastMonthlyReport ? lastMonthlyReport.commitNum : 0;
+    return commitNum - lastCommitNum;
+  }
+
+  async getRequestReportLog(): Promise<requestRepoInputDto[]> {
+    const thisMonthFirstDay = new Date(
+      new Date(new Date().setDate(1)).setHours(0, 0, 0, 0),
+    );
+
+    return this.reportLogsRepository
+      .createQueryBuilder('reportLog')
+      .select('reportLog.id', 'reportLogId')
+      .addSelect('user.id', 'userId')
+      .addSelect('user.username', 'username')
+      .addSelect('oauthInfo.accessToken', 'gitAccessToken')
+      .where('reportLog.reportStatus =:statusValue', {
+        statusValue: ProcessStatus.REQUEST,
+      })
+      .andWhere('reportLog.updatedAt >= :thisMonthFirstDay', {
+        thisMonthFirstDay,
+      })
+      .innerJoin(User, 'user', 'reportLog.user = user.id')
+      .innerJoin(OauthInfo, 'oauthInfo', 'oauthInfo.userId = user.id')
+      .getRawMany();
+  }
+
+  // 정기적으로 분석 요청 생성 - 월 1회
+  async createMonthlyReportRequest(): Promise<ReportLog[]> {
+    // 정기 update - 이번달에 reportlog가 없거나, 있어도 SUCCESS 상태이거나 ONPROGRESS 상태이거나 REQUEST 상태가 아닐 경우.
+    const saveData: ReportLog[] = [];
+    const thisMonthFirstDay = new Date(
+      new Date(new Date().setDate(1)).setHours(0, 0, 0, 0),
+    );
+
+    const allUsers = await this.usersRepository.find({ select: ['id'] });
+
+    for (const { id: userId } of allUsers) {
+      const checkReportLog = await this.reportLogsRepository.findOne({
+        where: {
+          user: { id: userId },
+          updatedAt: MoreThanOrEqual(thisMonthFirstDay),
+        },
+        order: { updatedAt: 'DESC' },
+        select: ['id', 'reportStatus'],
+      });
+      if (
+        checkReportLog?.reportStatus == ProcessStatus.FAIL ||
+        !checkReportLog
+      ) {
+        saveData.push(
+          this.reportLogsRepository.create({
+            user: { id: userId },
+            reportStatus: ProcessStatus.REQUEST,
+          }),
+        );
+      }
+    }
+    return this.reportLogsRepository.save(saveData);
   }
 
   // 이 레포의 월간 commit 기록 - 레포의 default 브랜치로만 기준으로 가져옴
@@ -515,18 +540,12 @@ export class GithubService {
     return responseData.data;
   }
 
-  createMonthlyCommitLogObject(): { commitDate: Date; commitNum: number }[] {
+  createMonthlyCommitLogObject(): number[] {
     var prevMonthLastDay = new Date(new Date().setDate(0));
     prevMonthLastDay.setHours(0, 0, 0, 0);
     const dayNum = prevMonthLastDay.getDate();
     const rtnObject = [];
-    for (let i = 1; i <= dayNum; i++) {
-      rtnObject.push({
-        commitDate: new Date(new Date(prevMonthLastDay).setDate(i)),
-        commitNum: 0,
-      });
-    }
-    return rtnObject;
+    return Array.apply(null, Array(dayNum)).map(Number.prototype.valueOf, 0);
   }
 
   async createCommitReportData() {

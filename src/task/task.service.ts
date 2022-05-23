@@ -87,7 +87,7 @@ export class TaskService {
     wishTask,
     userId,
   }: {
-    wishTask: { id: string; priority: number }[];
+    wishTask: string[];
     userId: string;
   }) {
     //   기존의 관심 직무 삭제
@@ -97,14 +97,15 @@ export class TaskService {
       task: { id: string };
       priority: number;
     }[] = [];
-    for (const { id: taskId, priority: inputPriority } of wishTask) {
-      const priority = +inputPriority;
-      if (priority == 0 || priority > 3) continue;
+    var priority = 1;
+    for (const taskId of wishTask) {
+      if (priority > 3) break;
       createWishTaskData.push({
         user: { id: userId },
         task: { id: taskId },
         priority,
       });
+      priority++;
     }
     await this.wishTasksRepository.save(createWishTaskData);
   }

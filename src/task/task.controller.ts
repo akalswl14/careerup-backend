@@ -77,7 +77,7 @@ export class TaskController {
   @UseGuards(AuthGuard('jwt'))
   async setWishTask(
     @Req() { user: { userId } },
-    @Body('wishTask') wishTask: setWishTaskDto[],
+    @Body('wishTask') wishTask: string[],
   ) {
     return this.taskService.setWishTask({ wishTask, userId });
   }

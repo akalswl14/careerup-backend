@@ -25,8 +25,8 @@ export class MonthlyReport {
   @Column({ nullable: true, default: 0 })
   momCommitNum: number;
 
-  @Column({ type: 'json' })
-  commitDetail: string;
+  @Column('int', { array: true, nullable: true })
+  commitDetail: number[];
 
   @Column({ nullable: true, default: 0 })
   starNum: number;

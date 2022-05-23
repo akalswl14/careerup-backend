@@ -296,7 +296,7 @@ export class GithubService {
             repoIds,
             commitNum,
             momCommitNum,
-            commitDetail: JSON.stringify(monthlyCommitLog),
+            commitDetail: monthlyCommitLog,
             starNum,
             mostStarRepo,
             languageDetail: JSON.stringify(languageDetail),
@@ -340,17 +340,17 @@ export class GithubService {
     return rtnLogs;
   }
 
-  async getMonthlyCommitLog(commitData: any[]) {
+  getMonthlyCommitLog(commitData: any[]): number[] {
     // 지난 달의 commit 기록을 저장하기 위한 리스트 생성 및 데이터 삽입
-    const monthlyCommitLog = this.createMonthlyCommitLogObject();
+    const monthlyCommitLog: number[] = this.createMonthlyCommitLogObject();
     for (const {
       commit: {
         committer: { date: commitLogDate },
       },
     } of commitData) {
       const targetDate = new Date(commitLogDate).getDate();
-      let { commitNum } = monthlyCommitLog[targetDate - 1];
-      monthlyCommitLog[targetDate - 1].commitNum = commitNum + 1;
+      let commitNum = monthlyCommitLog[targetDate - 1];
+      monthlyCommitLog[targetDate - 1] = commitNum + 1;
     }
     return monthlyCommitLog;
   }
@@ -540,18 +540,12 @@ export class GithubService {
     return responseData.data;
   }
 
-  createMonthlyCommitLogObject(): { commitDate: Date; commitNum: number }[] {
+  createMonthlyCommitLogObject(): number[] {
     var prevMonthLastDay = new Date(new Date().setDate(0));
     prevMonthLastDay.setHours(0, 0, 0, 0);
     const dayNum = prevMonthLastDay.getDate();
     const rtnObject = [];
-    for (let i = 1; i <= dayNum; i++) {
-      rtnObject.push({
-        commitDate: new Date(new Date(prevMonthLastDay).setDate(i)),
-        commitNum: 0,
-      });
-    }
-    return rtnObject;
+    return Array.apply(null, Array(dayNum)).map(Number.prototype.valueOf, 0);
   }
 
   async createCommitReportData() {

@@ -13,6 +13,7 @@ import { TechstackModule } from './techstack/techstack.module';
 import { TaskModule } from './task/task.module';
 import { GithubModule } from './github/github.module';
 import { MemoirModule } from './memoir/memoir.module';
+import { TrendModule } from './trend/trend.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MemoirModule } from './memoir/memoir.module';
     TaskModule,
     GithubModule,
     MemoirModule,
+    TrendModule,
   ],
   controllers: [AppController],
   providers: [AppService],

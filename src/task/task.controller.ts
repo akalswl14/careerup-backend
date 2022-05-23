@@ -67,7 +67,7 @@ export class TaskController {
       '사용자의 희망 직무 선택 페이지에서, 직무 옵션 선택을 반영한다.',
   })
   @ApiBody({
-    type: setWishTaskDto,
+    type: 'string',
     description: '사용자 희망 직무 선택 반영 입력값',
     isArray: true,
   })

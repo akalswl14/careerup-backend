@@ -218,7 +218,7 @@ export class RecruitController {
     @Req() { user: { userId } },
     @Query() searchQuery: searchRecruitQueryDto,
   ): Promise<Pagination<recruitThumbnailDto>> {
-    return this.recruitService.getTodayRecruits(searchQuery, userId);
+    return this.recruitService.getSearchRecruits(searchQuery, userId);
   }
 
   @Get('/:id')

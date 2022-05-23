@@ -54,7 +54,7 @@ export class searchRecruitQueryDto {
   type: number;
 
   @IsNumberString()
-  @ApiProperty({ description: '검색 키워드', required: true })
+  @ApiProperty({ description: '검색 키워드. 해당 ID값', required: true })
   keyword: string;
 
   @IsNumber()

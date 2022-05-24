@@ -16,6 +16,7 @@ import {
 } from 'src/dto/github.dto';
 import { ReportLog } from 'src/entities/report-log.entity';
 import { Repository } from 'src/entities/repository.entity';
+import { systemSecret } from 'src/middleware/constants';
 import { GithubService } from './github.service';
 
 @ApiTags('github 정보 API')
@@ -68,25 +69,33 @@ export class GithubController {
   @ApiOperation({
     summary: '요청된 분석 결과 생성 API',
     description:
-      'report_log에 REQUET 상태인, 직접 분석 요청된 건에 대해 분석을 실행한다.\n해당 권한에 대한 토큰이 필요하다.(토큰 아직 미적용)',
+      'report_log에 REQUET 상태인, 직접 분석 요청된 건에 대해 분석을 실행한다.\n해당 권한에 대한 토큰이 필요하다.',
   })
   @UseGuards(AuthGuard('jwt'))
   async createManualReport(
     @Req() { user: { userId } },
   ): Promise<reportLogDto[]> {
-    return this.githubsService.createManualReport();
+    if (userId == systemSecret) {
+      return this.githubsService.createManualReport();
+    } else {
+      return [];
+    }
   }
   @Post('report/monthlyrequest')
   @ApiOperation({
     summary: '월별 정기 분석 요청 생성 API',
     description:
-      '월별 정기적으로 분석 요청( Request상태의 ReportLog )을 생성한다.\n 단, 해당 월에 분석 결과가 생성된 적이 없거나, 생성되었더라도 success / onprogress 상태가 아닌 경우에 해당되는 유저를 대상으로 생성한다.\n해당 권한에 대한 토큰이 필요하다.(토큰 아직 미적용)',
+      '월별 정기적으로 분석 요청( Request상태의 ReportLog )을 생성한다.\n 단, 해당 월에 분석 결과가 생성된 적이 없거나, 생성되었더라도 success / onprogress 상태가 아닌 경우에 해당되는 유저를 대상으로 생성한다.\n해당 권한에 대한 토큰이 필요하다.',
   })
   @UseGuards(AuthGuard('jwt'))
   async createMonthlyReportRequest(
     @Req() { user: { userId } },
   ): Promise<ReportLog[]> {
-    return this.githubsService.createMonthlyReportRequest();
+    if (userId == systemSecret) {
+      return this.githubsService.createMonthlyReportRequest();
+    } else {
+      return [];
+    }
   }
 
   @Get('report')

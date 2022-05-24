@@ -483,9 +483,6 @@ export class GithubService {
         };
       }
     }
-    Logger.log('COMMIT 데이터 가져오기');
-    Logger.log(`Repo Name : ${repoName}`);
-    Logger.log(JSON.stringify(rtnCommitData[0]));
     return { status: 200, message: null, data: rtnCommitData };
   }
 

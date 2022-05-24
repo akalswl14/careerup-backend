@@ -1,13 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsArray,
-  IsBoolean,
-  IsDate,
-  IsEnum,
-  IsNumber,
-  IsNumberString,
-  IsString,
-} from 'class-validator';
+import { IsDate, IsNumberString, IsString } from 'class-validator';
 import { Entity } from 'typeorm';
 
 @Entity()

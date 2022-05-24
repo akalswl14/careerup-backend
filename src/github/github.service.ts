@@ -667,6 +667,10 @@ export class GithubService {
         memoir: null,
       };
     }
+    const userInfo = await this.usersRepository.findOne({
+      where: { id: userId },
+      select: ['username'],
+    });
     delete reportResult['user'];
     delete reportResult['repoIds'];
     delete reportResult['updatedAt'];
@@ -674,9 +678,13 @@ export class GithubService {
       where: { monthlyReport: { id: reportResult.id } },
       order: { createdAt: 'DESC' },
     });
+
     return {
       status: null,
-      contents: reportResult,
+      contents: {
+        ...reportResult,
+        username: userInfo ? userInfo.username : '',
+      },
       memoir: memoirResult
         ? {
             id: memoirResult.id,

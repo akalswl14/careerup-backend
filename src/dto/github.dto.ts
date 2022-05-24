@@ -163,10 +163,10 @@ export class languageToTaskDto {
   languageName: string;
 }
 
-export type monthlyReportContents = Omit<
-  MonthlyReport,
-  'user' | 'repoIds' | 'updatedAt'
->;
+export interface monthlyReportContents
+  extends Omit<MonthlyReport, 'user' | 'repoIds' | 'updatedAt'> {
+  username: string;
+}
 
 @Entity()
 export class monthlyReportThumbnail {

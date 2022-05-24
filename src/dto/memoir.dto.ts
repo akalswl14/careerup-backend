@@ -40,11 +40,11 @@ export class inputMemoirDto {
   @IsNumberString()
   @ApiProperty({
     description:
-      '월간 분석 결과에 해당하는 회고록 ID. \nMonthlyReport 페이지를 통해, 회고록을 최초 생성할 경우 ID가 없을 때에는 null 값으로 보내고, monthlyReport ID는 not null로 전달해야함.',
+      '월간 분석 결과 ID. \nMonthlyReport 페이지를 통해, 회고록을 최초 생성할 경우 ID가 없을 때에는 id property를 null 값으로 보내고, monthlyReport ID propperty는 not null로 전달해야함.',
     required: true,
-    nullable: true,
+    nullable: false,
   })
-  id: string;
+  monthlyReportId: string;
 
   @IsString()
   @ApiProperty({
@@ -53,13 +53,4 @@ export class inputMemoirDto {
     nullable: false,
   })
   description: string;
-
-  @IsNumberString()
-  @ApiProperty({
-    description:
-      '월간 분석 결과 ID. \nMonthlyReport 페이지를 통해, 회고록을 최초 생성할 경우 ID가 없을 때에는 id property를 null 값으로 보내고, monthlyReport ID propperty는 not null로 전달해야함.',
-    required: true,
-    nullable: true,
-  })
-  monthlyReportId: string;
 }

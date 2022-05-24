@@ -31,22 +31,18 @@ export class MemoirService {
     userId: string,
     inputMemoir: inputMemoirDto,
   ): Promise<Boolean> {
-    const { id: memoirId, monthlyReportId, description } = inputMemoir;
-    if (memoirId) {
+    const { monthlyReportId, description } = inputMemoir;
+    const prevMemoir = await this.memoirsRepository.findOne({
+      where: { monthlyReport: { id: monthlyReportId } },
+      order: { createdAt: 'DESC' },
+    });
+    if (prevMemoir) {
       // 기존에 회고록이 있고, 수정하는 경우
-      const checkMemoir = await this.memoirsRepository.findOne({
-        where: { id: memoirId, user: { id: userId } },
-      });
-      if (!checkMemoir) {
-        // 회고록 조회 실패 - 없는 회고록 이거나, 해당 회고록의 user가 아닌 경우거나,
-        throw new NotFoundException({
-          description: `조회할 수 없는 Memoir입니다.`,
-        });
-      }
-      await this.memoirsRepository.update({ id: memoirId }, { description });
-      return true;
-    } else if (monthlyReportId) {
-      // 회고록을 새로 생성하는 경우
+      await this.memoirsRepository.update(
+        { id: prevMemoir.id },
+        { description },
+      );
+    } else {
       await this.memoirsRepository.save(
         this.memoirsRepository.create({
           user: { id: userId },
@@ -54,12 +50,11 @@ export class MemoirService {
           description,
         }),
       );
-      return true;
-    } else {
-      // 잘못된 input
-      throw new BadRequestException({
-        description: `잘못된 요청입니다.`,
-      });
     }
+    // // 회고록 조회 실패 - 없는 회고록 이거나, 해당 회고록의 user가 아닌 경우거나,
+    // throw new NotFoundException({
+    //   description: `조회할 수 없는 Memoir입니다.`,
+    // });
+    return true;
   }
 }

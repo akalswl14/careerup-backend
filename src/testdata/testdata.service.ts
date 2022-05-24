@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import {
   TestLanguageDto,
@@ -166,8 +166,6 @@ export class TestdataService {
         select: ['id'],
       });
       if (!stackInfo) {
-        Logger.log('NOT FOUND STACK');
-        Logger.log(stackName);
       }
       const { id: techstackId } = stackInfo;
       if (language_id1 !== '') {

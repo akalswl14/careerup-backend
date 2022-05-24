@@ -1,5 +1,4 @@
 import { ConflictException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginInfo } from 'src/entities/login-info.entity';
@@ -15,7 +14,6 @@ export class AuthService {
     private oauthInfosRepository: Repository<OauthInfo>,
     @InjectRepository(LoginInfo)
     private loginInfosRepository: Repository<LoginInfo>,
-    private readonly configService: ConfigService,
     private jwtService: JwtService,
   ) {}
 

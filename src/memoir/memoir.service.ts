@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { inputMemoirDto, memoirThumbnail } from 'src/dto/memoir.dto';
 import { Memoir } from 'src/entities/memoir.entity';

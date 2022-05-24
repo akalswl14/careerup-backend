@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import {
   TestLanguageInputDto,
   TestRecruitInputDto,
@@ -11,12 +11,15 @@ import {
   ApiTags,
   ApiOperation,
   ApiOkResponse,
-  ApiQuery,
   ApiBody,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { systemSecret } from 'src/middleware/constants';
 
-@Controller('testdata')
 @ApiTags('테스트 데이터 삽입 API')
+@ApiBearerAuth()
+@Controller('testdata')
 export class TestdataController {
   constructor(private readonly testDataService: TestdataService) {}
 
@@ -33,10 +36,16 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
+  @UseGuards(AuthGuard('jwt'))
   async putRecruitData(
+    @Req() { user: { userId } },
     @Body() { inputData }: { inputData: TestRecruitInputDto[] },
   ): Promise<Boolean> {
-    return this.testDataService.putRecruitData(inputData);
+    if (userId == systemSecret) {
+      return this.testDataService.putRecruitData(inputData);
+    } else {
+      return false;
+    }
   }
 
   @Post('connectrecruit')
@@ -53,10 +62,16 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
+  @UseGuards(AuthGuard('jwt'))
   async connectRecruitData(
+    @Req() { user: { userId } },
     @Body() { inputData }: { inputData: TestRecruitInputDto[] },
   ): Promise<Boolean> {
-    return this.testDataService.connectRecruitData(inputData);
+    if (userId == systemSecret) {
+      return this.testDataService.connectRecruitData(inputData);
+    } else {
+      return false;
+    }
   }
 
   @Post('task')
@@ -72,10 +87,16 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
+  @UseGuards(AuthGuard('jwt'))
   async putTaskData(
+    @Req() { user: { userId } },
     @Body() { inputData }: { inputData: TestTaskInputDto[] },
   ): Promise<Boolean> {
-    return this.testDataService.putTaskData(inputData);
+    if (userId == systemSecret) {
+      return this.testDataService.putTaskData(inputData);
+    } else {
+      return false;
+    }
   }
 
   @Post('stack')
@@ -91,10 +112,16 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
+  @UseGuards(AuthGuard('jwt'))
   async putStackData(
+    @Req() { user: { userId } },
     @Body() { inputData }: { inputData: TestStackInputDto[] },
   ): Promise<Boolean> {
-    return this.testDataService.putStackData(inputData);
+    if (userId == systemSecret) {
+      return this.testDataService.putStackData(inputData);
+    } else {
+      return false;
+    }
   }
 
   @Post('language')
@@ -110,10 +137,16 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
+  @UseGuards(AuthGuard('jwt'))
   async putLanguageData(
+    @Req() { user: { userId } },
     @Body() { inputData }: { inputData: TestLanguageInputDto[] },
   ): Promise<Boolean> {
-    return this.testDataService.putLanguageData(inputData);
+    if (userId == systemSecret) {
+      return this.testDataService.putLanguageData(inputData);
+    } else {
+      return false;
+    }
   }
 
   @Post('stacktolanguage')
@@ -130,10 +163,16 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
+  @UseGuards(AuthGuard('jwt'))
   async putStackToLanguageData(
+    @Req() { user: { userId } },
     @Body() { inputData }: { inputData: TestStackToLanguageInputDto[] },
   ): Promise<Boolean> {
-    return this.testDataService.putStackToLanguageData(inputData);
+    if (userId == systemSecret) {
+      return this.testDataService.putStackToLanguageData(inputData);
+    } else {
+      return false;
+    }
   }
 
   @Post('trendstack')
@@ -149,8 +188,16 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
-  async putTrendStackData(@Body() inputData: any): Promise<Boolean> {
-    return this.testDataService.putTrendStackData(inputData);
+  @UseGuards(AuthGuard('jwt'))
+  async putTrendStackData(
+    @Req() { user: { userId } },
+    @Body() inputData: any,
+  ): Promise<Boolean> {
+    if (userId == systemSecret) {
+      return this.testDataService.putTrendStackData(inputData);
+    } else {
+      return false;
+    }
   }
 
   @Post('extratrendstack')
@@ -166,7 +213,15 @@ export class TestdataController {
     description: '성공일 경우 True, 실패일 경우 False',
     type: Boolean,
   })
-  async putExtraTrendStackData(@Body() inputData: any): Promise<Boolean> {
-    return this.testDataService.putExtraTrendStackData(inputData);
+  @UseGuards(AuthGuard('jwt'))
+  async putExtraTrendStackData(
+    @Req() { user: { userId } },
+    @Body() inputData: any,
+  ): Promise<Boolean> {
+    if (userId == systemSecret) {
+      return this.testDataService.putExtraTrendStackData(inputData);
+    } else {
+      return false;
+    }
   }
 }

@@ -18,6 +18,12 @@ export class TrendService {
   ) {}
 
   async getTrendTask(): Promise<trendTaskDto[]> {
+    /* 제외항목
+    - 네트워크
+    - it컨설팅
+    - dba
+    - si개발
+    */
     const trendTaskCodes: string[] = [
       '80',
       '81',
@@ -32,14 +38,10 @@ export class TrendService {
       '90',
       '91',
       '92',
-      '95',
       '97',
-      '98',
       '99',
       '100',
-      '101',
       '181',
-      '104',
       '153',
       '128',
       '184',

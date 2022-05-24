@@ -16,7 +16,7 @@ import { TrendStack } from 'src/entities/trend-stack.entity';
 import { WishRecruit } from 'src/entities/wish-recruit.entity';
 import { WishTask } from 'src/entities/wish-task.entity';
 import { Pagination, PaginationOption } from 'src/paginate';
-import { getConnection, OrderByCondition, Repository } from 'typeorm';
+import { OrderByCondition, Repository } from 'typeorm';
 
 @Injectable()
 export class RecruitService {

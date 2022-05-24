@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { searchOptionDto } from 'src/dto/output.dto';
 import { userWishTaskDto, wishTaskOptionDto } from 'src/dto/task.dto';
 import { Task } from 'src/entities/task.entity';
 import { User } from 'src/entities/user.entity';
@@ -45,7 +46,7 @@ export class TaskService {
     priority,
   }: {
     userId: string;
-    priority: string;
+    priority: number;
   }): Promise<wishTaskOptionDto[]> {
     const taskData = await this.tasksRepository.find({
       where: { isDuplicate: false },
@@ -67,13 +68,13 @@ export class TaskService {
     priority,
   }: {
     userId: string;
-    priority: number | string;
+    priority: number;
   }): Promise<string> | null {
     try {
       const {
         task: { id: taskId },
       } = await this.wishTasksRepository.findOne({
-        where: { user: { id: userId }, priority: +priority },
+        where: { user: { id: userId }, priority },
       });
       return taskId;
     } catch {
@@ -86,7 +87,7 @@ export class TaskService {
     wishTask,
     userId,
   }: {
-    wishTask: { id: string; priority: string }[];
+    wishTask: string[];
     userId: string;
   }) {
     //   기존의 관심 직무 삭제
@@ -96,15 +97,29 @@ export class TaskService {
       task: { id: string };
       priority: number;
     }[] = [];
-    for (const { id: taskId, priority: inputPriority } of wishTask) {
-      const priority = +inputPriority;
-      if (priority == 0 || priority > 3) continue;
+    var priority = 1;
+    for (const taskId of wishTask) {
+      if (priority > 3) break;
       createWishTaskData.push({
         user: { id: userId },
         task: { id: taskId },
         priority,
       });
+      priority++;
     }
     await this.wishTasksRepository.save(createWishTaskData);
+  }
+
+  async getSearchTask(): Promise<searchOptionDto[]> {
+    const taskResult = await this.tasksRepository.find({
+      where: { isDuplicate: false },
+      select: ['id', 'taskName'],
+      order: { id: 'ASC' },
+    });
+    return taskResult.map(({ id, taskName }) => ({
+      id,
+      optionName: taskName,
+      type: 0,
+    }));
   }
 }

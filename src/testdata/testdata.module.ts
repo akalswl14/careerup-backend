@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Language } from 'src/entities/language.entity';
 import { Recruit } from 'src/entities/recruit.entity';
+import { StackToLanguage } from 'src/entities/stack-to-language.entity';
 import { Task } from 'src/entities/task.entity';
 import { Techstack } from 'src/entities/techstack.entity';
 import { TrendStack } from 'src/entities/trend-stack.entity';
@@ -18,6 +19,7 @@ import { TestdataService } from './testdata.service';
       Techstack,
       Language,
       TrendStack,
+      StackToLanguage,
     ]),
   ],
   controllers: [TestdataController],

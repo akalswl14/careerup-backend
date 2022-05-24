@@ -6,30 +6,29 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Task } from './task.entity';
 import { Techstack } from './techstack.entity';
+import { Language } from './language.entity';
 
-@Entity('trend_stack')
-export class TrendStack {
+@Entity('stack_to_language')
+export class StackToLanguage {
   @PrimaryGeneratedColumn({ type: 'bigint' })
   id: string;
 
-  @ManyToOne(() => Task, (task) => task.trendStacks, { nullable: false })
-  task: Task;
-
-  @ManyToOne(() => Techstack, (techstack) => techstack.trendStacks, {
+  @ManyToOne(() => Techstack, (techstack) => techstack.stackToLanguages, {
     nullable: false,
   })
   techstack: Techstack;
 
-  @Column()
-  taskId: string;
+  @ManyToOne(() => Language, (language) => language.stackToLanguages, {
+    nullable: false,
+  })
+  language: Language;
 
   @Column()
   techstackId: string;
 
   @Column()
-  priority: number;
+  languageId: string;
 
   @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;

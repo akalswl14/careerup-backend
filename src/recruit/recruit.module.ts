@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Recruit } from 'src/entities/recruit.entity';
 import { Task } from 'src/entities/task.entity';
 import { Techstack } from 'src/entities/techstack.entity';
+import { TrendStack } from 'src/entities/trend-stack.entity';
 import { User } from 'src/entities/user.entity';
 import { WishRecruit } from 'src/entities/wish-recruit.entity';
 import { WishTask } from 'src/entities/wish-task.entity';
@@ -23,6 +23,7 @@ import { RecruitService } from './recruit.service';
       Techstack,
       WishTask,
       WishRecruit,
+      TrendStack,
     ]),
   ],
   controllers: [RecruitController],

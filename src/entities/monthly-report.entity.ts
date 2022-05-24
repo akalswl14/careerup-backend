@@ -16,8 +16,8 @@ export class MonthlyReport {
   @ManyToOne(() => User, (user) => user.monthlyReports, { nullable: false })
   user: User;
 
-  @Column({ type: 'bigint' })
-  repoIds: bigint[];
+  @Column({ type: 'bigint', array: true })
+  repoIds: string[];
 
   @Column({ nullable: true, default: 0 })
   commitNum: number;
@@ -25,8 +25,8 @@ export class MonthlyReport {
   @Column({ nullable: true, default: 0 })
   momCommitNum: number;
 
-  @Column({ type: 'json' })
-  commitDetail: string;
+  @Column('int', { array: true, nullable: true })
+  commitDetail: number[];
 
   @Column({ nullable: true, default: 0 })
   starNum: number;
@@ -37,14 +37,20 @@ export class MonthlyReport {
   @Column({ type: 'json' })
   languageDetail: string;
 
+  @Column({ nullable: true, type: 'bigint' })
+  stackId: string;
+
   @Column({ length: '255', nullable: true })
   stackName: string;
 
   @Column({ length: '255', nullable: true })
   stackLanguage: string;
 
+  @Column({ nullable: true, type: 'bigint' })
+  stackTaskId: string;
+
   @Column({ length: '255', nullable: true })
-  stackTask: string;
+  stackTaskName: string;
 
   @CreateDateColumn({ type: 'timestamp without time zone' })
   createdAt: Date;

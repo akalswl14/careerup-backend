@@ -1,5 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { userProfileDto } from 'src/dto/user.dto';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import {
@@ -13,6 +18,7 @@ export class UserService {
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
   ) {}
 
+  // NOT USE
   async createAccount(
     createAccountInput: CreateAccountInput,
   ): Promise<CreateAccountOutput> {
@@ -39,5 +45,15 @@ export class UserService {
     } catch (e) {
       throw e;
     }
+  }
+
+  async getUserProfile(userId: string): Promise<userProfileDto> {
+    const userResult = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
+    if (!userResult) throw new NotFoundException(`조회할 수 없는 user 입니다.`);
+    const { username, profileUrl, email } = userResult;
+
+    return { id: userId, username, profileUrl, email };
   }
 }

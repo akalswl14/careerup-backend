@@ -11,6 +11,9 @@ import { TestdataModule } from './testdata/testdata.module';
 import { config } from 'ormconfig';
 import { TechstackModule } from './techstack/techstack.module';
 import { TaskModule } from './task/task.module';
+import { GithubModule } from './github/github.module';
+import { MemoirModule } from './memoir/memoir.module';
+import { TrendModule } from './trend/trend.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { TaskModule } from './task/task.module';
     TestdataModule,
     TechstackModule,
     TaskModule,
+    GithubModule,
+    MemoirModule,
+    TrendModule,
   ],
   controllers: [AppController],
   providers: [AppService],

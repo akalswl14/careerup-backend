@@ -386,6 +386,7 @@ export class GithubService {
       })
       .innerJoin(User, 'user', 'reportLog.user = user.id')
       .innerJoin(OauthInfo, 'oauthInfo', 'oauthInfo.userId = user.id')
+      .take(10)
       .getRawMany();
   }
 
@@ -657,9 +658,7 @@ export class GithubService {
         order: { createdAt: 'DESC' },
       });
       return {
-        status: reportLogResult
-          ? reportLogResult.reportStatus
-          : ProcessStatus.FAIL,
+        status: reportLogResult ? reportLogResult.reportStatus : null,
         contents: null,
         memoir: null,
       };
@@ -675,12 +674,48 @@ export class GithubService {
       where: { monthlyReport: { id: reportResult.id } },
       order: { createdAt: 'DESC' },
     });
-
+    const languageDetail: { [langName: string]: number } = JSON.parse(
+      reportResult.languageDetail,
+    );
+    const lang = Object.keys(languageDetail);
+    const langCount = Object.values(languageDetail);
+    delete reportResult['languageDetail'];
+    if (
+      !(
+        reportResult.commitNum ||
+        reportResult.momCommitNum ||
+        reportResult.starNum ||
+        reportResult.mostStarRepo ||
+        reportResult.stackName ||
+        reportResult.stackLanguage ||
+        reportResult.stackTaskName ||
+        reportResult.commitDetail
+      )
+    ) {
+      return {
+        status: ProcessStatus.FAIL,
+        contents: null,
+        memoir: null,
+      };
+    }
+    if (
+      lang.length == 0 ||
+      langCount.length == 0 ||
+      lang.length != langCount.length
+    ) {
+      return {
+        status: ProcessStatus.FAIL,
+        contents: null,
+        memoir: null,
+      };
+    }
     return {
       status: null,
       contents: {
         ...reportResult,
         username: userInfo ? userInfo.username : '',
+        lang,
+        langCount,
       },
       memoir: memoirResult
         ? {

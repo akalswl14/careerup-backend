@@ -164,8 +164,13 @@ export class languageToTaskDto {
 }
 
 export interface monthlyReportContents
-  extends Omit<MonthlyReport, 'user' | 'repoIds' | 'updatedAt'> {
+  extends Omit<
+    MonthlyReport,
+    'user' | 'repoIds' | 'updatedAt' | 'languageDetail'
+  > {
   username: string;
+  lang: string[];
+  langCount: number[];
 }
 
 @Entity()

@@ -386,6 +386,7 @@ export class GithubService {
       })
       .innerJoin(User, 'user', 'reportLog.user = user.id')
       .innerJoin(OauthInfo, 'oauthInfo', 'oauthInfo.userId = user.id')
+      .take(10)
       .getRawMany();
   }
 

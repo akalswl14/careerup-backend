@@ -20,7 +20,6 @@ import {
 import { searchOptionDto } from 'src/dto/output.dto';
 import {
   priorityQueryDto,
-  setWishTaskDto,
   userWishTaskDto,
   wishTaskOptionDto,
 } from 'src/dto/task.dto';

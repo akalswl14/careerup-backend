@@ -321,8 +321,6 @@ export class GithubService {
           { id: reportLogId },
           { reportStatus: ProcessStatus.SUCCESS },
         );
-        // 테스트용으로 break. 여러 request로 테스트 할때 break 해제하고 해보고, 최종 때 뺼 것
-        break;
       } catch (e) {
         rtnLogs.push({
           reportId: null,
@@ -386,7 +384,7 @@ export class GithubService {
       })
       .innerJoin(User, 'user', 'reportLog.user = user.id')
       .innerJoin(OauthInfo, 'oauthInfo', 'oauthInfo.userId = user.id')
-      .take(10)
+      .take(5)
       .getRawMany();
   }
 

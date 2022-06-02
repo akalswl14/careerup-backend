@@ -9,9 +9,11 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { GithubStrategy } from '../middleware/github.strategy';
 import { jwtConstants } from '../middleware/constants';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
+    HttpModule,
     PassportModule,
     TypeOrmModule.forFeature([User, OauthInfo, LoginInfo]),
     JwtModule.register({

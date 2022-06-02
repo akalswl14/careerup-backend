@@ -18,7 +18,7 @@ import { HttpModule } from '@nestjs/axios';
     TypeOrmModule.forFeature([User, OauthInfo, LoginInfo]),
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: { expiresIn: '2d' },
+      signOptions: { expiresIn: '7d' },
     }),
   ],
   controllers: [AuthController],

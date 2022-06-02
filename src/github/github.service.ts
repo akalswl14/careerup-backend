@@ -321,8 +321,6 @@ export class GithubService {
           { id: reportLogId },
           { reportStatus: ProcessStatus.SUCCESS },
         );
-        // 테스트용으로 break. 여러 request로 테스트 할때 break 해제하고 해보고, 최종 때 뺼 것
-        break;
       } catch (e) {
         rtnLogs.push({
           reportId: null,

@@ -8,7 +8,6 @@ import { TrendStack } from 'src/entities/trend-stack.entity';
 import { User } from 'src/entities/user.entity';
 import { WishRecruit } from 'src/entities/wish-recruit.entity';
 import { WishTask } from 'src/entities/wish-task.entity';
-import { jwtConstants } from 'src/middleware/constants';
 import { JwtStrategy } from 'src/middleware/jwt.strategy';
 import { RecruitController } from './recruit.controller';
 import { RecruitService } from './recruit.service';
